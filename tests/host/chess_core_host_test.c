@@ -1,6 +1,8 @@
 /**
  * Host-only chess_core smoke tests (no ESP-IDF / FreeRTOS).
- * Compile from repo root; see plan phase 6.
+ * clang -std=c11 -I components/chess_core/include tests/host/chess_core_host_test.c
+ *   components/chess_core/position.c components/chess_core/fen.c
+ *   components/chess_core/movegen.c -o $env:TEMP\chess_core_host_test.exe
  */
 #include "position.h"
 
@@ -87,6 +89,88 @@ static void test_en_passant(void) {
   expect_false(position_legal(&p, ep_bad), "en passant illegal without ep square");
 }
 
+static void test_rook_move_undo_castling(void) {
+  position_t p;
+  position_move_t rook;
+  position_move_t black;
+  position_move_t castle;
+  const uint8_t all_castle =
+      (uint8_t)(POS_CASTLE_WK | POS_CASTLE_WQ | POS_CASTLE_BK | POS_CASTLE_BQ);
+
+  expect_true(
+      position_from_fen(&p, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPP1/RNBQK2R w KQkq - 0 1"),
+      "rook undo start fen");
+  expect_true(p.castling == all_castle, "start has all castling rights");
+  rook = mv(SQ(0, 7), SQ(2, 7), POS_PROMO_NONE);
+  expect_true(position_apply(&p, rook), "Rh1-h3 apply");
+  black = mv(SQ(6, 4), SQ(5, 4), POS_PROMO_NONE);
+  expect_true(position_apply(&p, black), "black e7-e6 tempo");
+  expect_true(position_undo(&p), "undo black tempo");
+  expect_true(position_undo(&p), "undo Rh1-h3");
+  expect_true(p.castling == all_castle, "castling bits restored after rook undo");
+  castle = mv(SQ(0, 4), SQ(0, 6), POS_PROMO_NONE);
+  expect_true(position_legal(&p, castle), "O-O legal after rook undo");
+}
+
+static void test_castle_undo(void) {
+  position_t p;
+  position_move_t castle;
+  const uint8_t all_castle =
+      (uint8_t)(POS_CASTLE_WK | POS_CASTLE_WQ | POS_CASTLE_BK | POS_CASTLE_BQ);
+
+  expect_true(
+      position_from_fen(&p, "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQK2R w KQkq - 0 1"),
+      "castle undo setup fen");
+  castle = mv(SQ(0, 4), SQ(0, 6), POS_PROMO_NONE);
+  expect_true(position_apply(&p, castle), "O-O apply");
+  expect_true(p.board[0][6] == POS_WHITE_KING, "king on g1 after castle");
+  expect_true(p.board[0][5] == POS_WHITE_ROOK, "rook on f1 after castle");
+  expect_true(position_undo(&p), "undo O-O");
+  expect_true(p.castling == all_castle, "castling rights restored after undo");
+  expect_true(p.board[0][4] == POS_WHITE_KING, "king back on e1");
+  expect_true(p.board[0][7] == POS_WHITE_ROOK, "rook back on h1");
+}
+
+static void test_king_wiggle_loses_castling(void) {
+  position_t p;
+  position_move_t w1;
+  position_move_t b1;
+  position_move_t w2;
+  position_move_t b2;
+  position_move_t castle;
+
+  expect_true(
+      position_from_fen(&p, "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQK2R w KQkq - 0 1"),
+      "king wiggle setup fen");
+  w1 = mv(SQ(0, 4), SQ(0, 5), POS_PROMO_NONE);
+  expect_true(position_apply(&p, w1), "Ke1-f1");
+  b1 = mv(SQ(6, 4), SQ(5, 4), POS_PROMO_NONE);
+  expect_true(position_apply(&p, b1), "e7-e6 black tempo");
+  w2 = mv(SQ(0, 5), SQ(0, 4), POS_PROMO_NONE);
+  expect_true(position_apply(&p, w2), "Kf1-e1 return");
+  b2 = mv(SQ(5, 4), SQ(4, 4), POS_PROMO_NONE);
+  expect_true(position_apply(&p, b2), "e6-e5 black tempo");
+  expect_true((p.castling & (POS_CASTLE_WK | POS_CASTLE_WQ)) == 0,
+              "white lost both castling rights after king moved");
+  castle = mv(SQ(0, 4), SQ(0, 6), POS_PROMO_NONE);
+  expect_false(position_legal(&p, castle), "O-O illegal after king wiggle");
+}
+
+static void test_fen_castling_field(void) {
+  position_t p;
+  position_move_t castle;
+
+  expect_true(position_from_fen(&p, "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQK2R w - - 0 1"),
+              "fen with no castling rights");
+  castle = mv(SQ(0, 4), SQ(0, 6), POS_PROMO_NONE);
+  expect_false(position_legal(&p, castle), "O-O illegal when FEN castling is -");
+
+  expect_true(
+      position_from_fen(&p, "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQK2R w KQkq - 0 1"),
+      "fen with KQkq");
+  expect_true(position_legal(&p, castle), "O-O legal when FEN has KQkq and path clear");
+}
+
 static void test_promotion(void) {
   position_t p;
   position_move_t promo;
@@ -105,6 +189,10 @@ int main(void) {
   test_checkmate();
   test_castling();
   test_en_passant();
+  test_rook_move_undo_castling();
+  test_castle_undo();
+  test_king_wiggle_loses_castling();
+  test_fen_castling_field();
   test_promotion();
 
   printf("chess_core host: %d passed, %d failed\n", g_pass, g_fail);

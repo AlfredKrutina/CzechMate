@@ -104,6 +104,7 @@ bool game_board_apply_machine_move(const board_machine_out_t *out,
   }
   pos_move_to_chess(&out->move, move_out);
   if (!game_execute_move(move_out)) {
+    game_board_transition_reset();
     return false;
   }
   game_mode_call_move_applied(game_logic_position(), out->move);

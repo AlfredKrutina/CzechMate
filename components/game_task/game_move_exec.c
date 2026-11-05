@@ -14,6 +14,7 @@
 #include "game_events.h"
 #include "game_board_core.h"
 #include "game_board_machine.h"
+#include "game_board_transition.h"
 #include "game_snapshot.h"
 #include "game_squares_guard.h"
 #include "game_policy.h"
@@ -381,6 +382,7 @@ bool game_execute_move(const chess_move_t *move) {
         }
         game_hall_snapshot_last_valid();
         game_snapshot_persist_after_valid_move();
+        game_board_transition_reset();
         return success;
       }
 #endif

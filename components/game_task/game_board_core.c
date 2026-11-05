@@ -48,6 +48,7 @@ void game_initialize_board(void) {
 
   memset(piece_moved, 0, sizeof(piece_moved));
   game_logic_reset();
+  game_logic_sync_globals_from_position(&s_logic);
   current_game_state = GAME_STATE_ACTIVE;
   move_count = 0;
 
@@ -115,6 +116,7 @@ bool game_load_position_from_fen(const char *fen, player_t *active_player) {
   }
   s_logic = *loaded;
   game_session_snap_refresh();
+  game_logic_sync_globals_from_position(&s_logic);
   piece_moved[0][4] = white_king_moved;
   piece_moved[0][0] = white_rook_a_moved;
   piece_moved[0][7] = white_rook_h_moved;
@@ -211,19 +213,16 @@ void game_logic_sync_globals_from_position(const position_t *p) {
   current_player = (player_t)p->side;
   white_rook_h_moved = (p->castling & POS_CASTLE_WK) == 0;
   white_rook_a_moved = (p->castling & POS_CASTLE_WQ) == 0;
-  /* Castling rights imply the king has not moved. If both rights are gone
-   * and the king left e1, it has moved. If both rooks moved but the king
-   * is still on e1, keep the previous flag. */
   if ((p->castling & (POS_CASTLE_WK | POS_CASTLE_WQ)) != 0) {
     white_king_moved = false;
-  } else if (p->board[0][4] != POS_WHITE_KING) {
+  } else {
     white_king_moved = true;
   }
   black_rook_h_moved = (p->castling & POS_CASTLE_BK) == 0;
   black_rook_a_moved = (p->castling & POS_CASTLE_BQ) == 0;
   if ((p->castling & (POS_CASTLE_BK | POS_CASTLE_BQ)) != 0) {
     black_king_moved = false;
-  } else if (p->board[7][4] != POS_BLACK_KING) {
+  } else {
     black_king_moved = true;
   }
   if (p->ep_square >= 64) {
@@ -259,16 +258,16 @@ static void game_logic_fill(position_t *p, bool clear_hist) {
     memset(p, 0, sizeof(*p));
   }
   p->side = (uint8_t)current_player;
-  if (!white_rook_h_moved) {
+  if (!white_king_moved && !white_rook_h_moved) {
     castle |= POS_CASTLE_WK;
   }
-  if (!white_rook_a_moved) {
+  if (!white_king_moved && !white_rook_a_moved) {
     castle |= POS_CASTLE_WQ;
   }
-  if (!black_rook_h_moved) {
+  if (!black_king_moved && !black_rook_h_moved) {
     castle |= POS_CASTLE_BK;
   }
-  if (!black_rook_a_moved) {
+  if (!black_king_moved && !black_rook_a_moved) {
     castle |= POS_CASTLE_BQ;
   }
   p->castling = castle;
