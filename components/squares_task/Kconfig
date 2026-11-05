@@ -88,11 +88,12 @@ menu "Chess matrix input"
 
         config CHESS_HALL_LIFT_HYSTERESIS
             bool "Lift re-occupy hysteresis (anti-flicker while empty)"
-            default y
+            default n
             help
-                After a published lift, require sustained re-occupy evidence
-                before the square reads placed again. Disabling restores the
-                pre-hysteresis occupancy decision (host replay baseline).
+                Experimental. After a published lift, require sustained
+                re-occupy evidence before the square reads placed again.
+                Thresholds are provisional; enable only after hardware traces
+                confirm them. Off restores the pre-hysteresis host baseline.
     endmenu
 
 endmenu

@@ -277,6 +277,12 @@ typedef struct {
 /** Per-square state — hysteresis and debounce are NOT global across the board. */
 static hall_poc_square_state_t s_poc_state[64];
 
+static void hall_poc_reset_lift_track(hall_poc_square_state_t *st) {
+  st->lift_vacant_peak = 0;
+  st->lift_ctx_fresh = false;
+  st->lift_block_scans = 0;
+}
+
 static void hall_gain_note(uint8_t sq, hall_piece_type_t type,
                            hall_piece_color_t color) {
   int32_t nominal = hall_type_nominal(type);
@@ -826,6 +832,7 @@ void hall_i2c_squares_set_logical_empty(const uint8_t empty_squares[64],
     /* New position: drop a stale lift veto. An empty square re-learns
      * neighbor crosstalk instead of keeping the last castle offset. */
     st->lift_block = false;
+    hall_poc_reset_lift_track(st);
     if (!st->occupied) {
       st->ctx_arm = (uint8_t)(HALL_NEIGHBOR_MASK_SCANS + HALL_STABLE_SCANS);
     }
@@ -860,6 +867,7 @@ void hall_i2c_squares_set_logical_empty(const uint8_t empty_squares[64],
     st->prev_occupied = false;
     st->prove_scans = 0;
     st->lift_block = false;
+    hall_poc_reset_lift_track(st);
   }
 }
 
@@ -931,6 +939,7 @@ static void hall_zero_discard(uint8_t sq) {
     st->reported = false;
     st->prove_scans = 0;
     st->lift_block = true;
+    hall_poc_reset_lift_track(st);
   }
   if (st->zero_has_backup) {
     st->midpoint[0] = st->zero_backup[0];
@@ -1224,9 +1233,7 @@ static uint8_t hall_poc_update_square(uint8_t sq, uint16_t r0, uint16_t r1) {
     if (!present) {
         if (st->occupied && st->reported) {
             st->lift_block = true;
-            st->lift_ctx_fresh = false;
-            st->lift_block_scans = 0;
-            st->lift_vacant_peak = 0;
+            hall_poc_reset_lift_track(st);
         }
         if (st->occupied) {
             st->prove_scans = 0;

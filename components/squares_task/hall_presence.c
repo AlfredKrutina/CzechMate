@@ -96,10 +96,8 @@ void hall_presence_step(const hall_presence_inputs_t *in,
 #if HALL_LIFT_HYSTERESIS
     if (st->lift_block && !st->reported && !st->lift_ctx_fresh &&
         st->lift_block_scans <= HALL_LIFT_REARM_MAX_SCANS) {
-        bool track = !above;
-        if (above && in->energy <= HALL_LIFT_VACANT_PEAK_TRACK_MAX) {
-            track = true;
-        }
+        bool track =
+            !above && in->energy <= HALL_LIFT_VACANT_PEAK_TRACK_MAX;
         if (track && in->energy > st->lift_vacant_peak) {
             st->lift_vacant_peak = in->energy;
         }
