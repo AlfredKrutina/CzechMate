@@ -12,6 +12,7 @@
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
 #include "game_hall_position.h"
 #include "game_hall_restore_guide.h"
+#include "../squares_task/include/hall_i2c_squares.h"
 #endif
 
 #include "game_led_direct.h"
@@ -227,6 +228,14 @@ void game_policy_refresh_idle_board_leds(void) {
       current_game_state != GAME_STATE_IDLE) {
     return;
   }
+
+#if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
+  if (!hall_i2c_squares_readings_usable()) {
+    game_hall_position_mark_idle_repaint_pending();
+    return;
+  }
+  game_hall_position_clear_idle_repaint_pending();
+#endif
 
   /* Guide tick must not paint over this full frame if its clear event is dropped. */
   game_event_required_step_disarm();

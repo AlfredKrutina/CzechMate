@@ -66,6 +66,7 @@ static bool s_pending_valid;
 static bool s_takeback_off_said;
 static bool s_chaos_restore;
 static bool s_idle_handover;
+static bool s_idle_repaint_pending;
 static bool s_chaos_match;
 static uint32_t s_chaos_match_since_ms;
 static bool s_castle_paint;
@@ -1611,6 +1612,14 @@ void game_hall_position_on_matrix_event(const game_cmd_t *cmd) {
 
 void game_hall_position_arm_idle_handover(void) { s_idle_handover = true; }
 
+void game_hall_position_mark_idle_repaint_pending(void) {
+  s_idle_repaint_pending = true;
+}
+
+void game_hall_position_clear_idle_repaint_pending(void) {
+  s_idle_repaint_pending = false;
+}
+
 bool game_hall_position_blocks_idle_leds(void) {
   if (s_idle_handover) {
     s_idle_handover = false;
@@ -1689,6 +1698,13 @@ void game_hall_position_service(void) {
   }
   if (!hall_i2c_squares_readings_usable()) {
     return;
+  }
+  if (s_idle_repaint_pending) {
+    s_idle_repaint_pending = false;
+    if (s_class == GAME_HALL_POS_EQUAL) {
+      game_hall_position_arm_idle_handover();
+      game_policy_refresh_idle_board_leds();
+    }
   }
   if (s_chaos_restore) {
     if (!chaos_context_ok()) {

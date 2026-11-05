@@ -64,6 +64,12 @@ bool game_hall_position_blocks_idle_leds(void);
 /** Next idle refresh may paint even while restore or chaos still owns the class. */
 void game_hall_position_arm_idle_handover(void);
 
+/** Defer idle movable-hint repaint until Hall readings stabilize. */
+void game_hall_position_mark_idle_repaint_pending(void);
+
+/** Clear a pending idle repaint (successful idle refresh calls this). */
+void game_hall_position_clear_idle_repaint_pending(void);
+
 /**
  * Scrambled board during play. Hold the clock and show the restore guide
  * until the sensors match the last legal position. No-op outside an active game.
