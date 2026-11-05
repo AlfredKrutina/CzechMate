@@ -1620,6 +1620,19 @@ void game_hall_position_clear_idle_repaint_pending(void) {
   s_idle_repaint_pending = false;
 }
 
+static void game_hall_consume_idle_repaint_pending(bool repainted_this_tick) {
+  if (!s_idle_repaint_pending) {
+    return;
+  }
+  s_idle_repaint_pending = false;
+  if (repainted_this_tick || s_class != GAME_HALL_POS_EQUAL) {
+    return;
+  }
+  game_hall_position_arm_idle_handover();
+  game_policy_refresh_idle_board_leds();
+  s_idle_handover = false;
+}
+
 bool game_hall_position_blocks_idle_leds(void) {
   if (s_idle_handover) {
     s_idle_handover = false;
@@ -1694,17 +1707,14 @@ void game_hall_position_service(void) {
     return;
   }
   if (game_get_move_count() == 0 && !game_hall_restore_guide_in_play()) {
+    if (s_idle_repaint_pending && hall_i2c_squares_readings_usable()) {
+      s_idle_repaint_pending = false;
+      game_policy_refresh_idle_board_leds();
+    }
     return;
   }
   if (!hall_i2c_squares_readings_usable()) {
     return;
-  }
-  if (s_idle_repaint_pending) {
-    s_idle_repaint_pending = false;
-    if (s_class == GAME_HALL_POS_EQUAL) {
-      game_hall_position_arm_idle_handover();
-      game_policy_refresh_idle_board_leds();
-    }
   }
   if (s_chaos_restore) {
     if (!chaos_context_ok()) {
@@ -1732,6 +1742,7 @@ void game_hall_position_service(void) {
     kind = classify(occ, &legal);
     if (kind != s_class) {
       bool was_equal = s_class == GAME_HALL_POS_EQUAL;
+      bool repainted = false;
       note_class(kind);
       if (kind == GAME_HALL_POS_ONE_LEGAL) {
         arm_legal(&legal);
@@ -1746,9 +1757,12 @@ void game_hall_position_service(void) {
         clear_partial_and_lift_state();
         game_hall_position_arm_idle_handover();
         game_policy_refresh_idle_board_leds();
+        repainted = true;
       }
+      game_hall_consume_idle_repaint_pending(repainted);
       return;
     }
+    game_hall_consume_idle_repaint_pending(false);
     service_unchanged(now_ms);
     return;
   }
@@ -1771,14 +1785,18 @@ void game_hall_position_service(void) {
         game_hall_restore_guide_release();
       }
       clear_partial_and_lift_state();
+      bool repainted = false;
       if (guide_was || prev_class != GAME_HALL_POS_EQUAL) {
         game_hall_position_arm_idle_handover();
         game_policy_refresh_idle_board_leds();
+        repainted = true;
       }
+      game_hall_consume_idle_repaint_pending(repainted);
       return;
     }
   }
   paint_for_class(occ);
+  game_hall_consume_idle_repaint_pending(false);
   if (s_class == GAME_HALL_POS_RESTORE) {
     hold_timer();
   }
