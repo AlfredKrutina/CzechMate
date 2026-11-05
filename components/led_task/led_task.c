@@ -2801,9 +2801,15 @@ void led_update_endgame_wave(void) {
       float dx = (float)col - origin_col;
       float dy = (float)row - origin_row;
       float dist = sqrtf(dx * dx + dy * dy);
-      float intensity =
-          fmaxf(endgame_ring(dist, r0) * a0, endgame_ring(dist, r1) * a1);
-      intensity *= endgame_wave.reveal;
+      float i0 = endgame_ring(dist, r0) * a0 * endgame_wave.reveal;
+      float i1 = endgame_ring(dist, r1) * a1 * endgame_wave.reveal;
+      float intensity = fmaxf(i0, i1);
+      if (i0 > 1.f) {
+        i0 = 1.f;
+      }
+      if (i1 > 1.f) {
+        i1 = 1.f;
+      }
       if (intensity < 0.02f) {
         led_set_pixel_safe(chess_pos_to_led_index(row, col), 0, 0, 0);
         continue;
@@ -2817,8 +2823,29 @@ void led_update_endgame_wave(void) {
       uint8_t green;
       uint8_t blue;
       uint8_t reason = endgame_wave.reason;
+      /* Resignation: same two rings, yellow/orange then dark orange/dark green. */
+      if (reason == 21) {
+        float rr = (255.f * i0) + (180.f * i1 * i1);
+        float gg = ((130.f + 90.f * i0) * i0) + ((80.f - 25.f * i1) * i1);
+        float bb = (20.f * (1.f - i1)) * i1;
+        if (rr > 255.f) {
+          rr = 255.f;
+        }
+        if (gg < 0.f) {
+          gg = 0.f;
+        }
+        if (gg > 255.f) {
+          gg = 255.f;
+        }
+        if (bb < 0.f) {
+          bb = 0.f;
+        }
+        led_set_pixel_safe(chess_pos_to_led_index(row, col), (uint8_t)rr,
+                           (uint8_t)gg, (uint8_t)bb);
+        continue;
+      }
       if (reason == 10 || reason == 11 || reason == 12 || reason == 13 ||
-          reason == 20 || reason == 21 || reason == 22) {
+          reason == 20 || reason == 22) {
         uint8_t cr = 180, cg = 180, cb = 180;
         if (reason == 11) {
           cr = 255;
@@ -2835,10 +2862,6 @@ void led_update_endgame_wave(void) {
         } else if (reason == 20) {
           cr = 255;
           cg = 0;
-          cb = 0;
-        } else if (reason == 21) {
-          cr = 255;
-          cg = 60;
           cb = 0;
         } else if (reason == 22) {
           cr = 200;
@@ -2875,9 +2898,10 @@ void led_update_endgame_wave(void) {
   }
 
   if (!endgame_wave.centre) {
+    uint8_t king_g = endgame_wave.reason == 21 ? 220 : 215;
     led_set_pixel_safe(endgame_wave.win_king_led,
                        (uint8_t)(255.f * endgame_wave.reveal),
-                       (uint8_t)(215.f * endgame_wave.reveal), 0);
+                       (uint8_t)((float)king_g * endgame_wave.reveal), 0);
   }
 }
 

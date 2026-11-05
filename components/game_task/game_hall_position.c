@@ -40,6 +40,8 @@
 
 static const char *TAG = "HALL_POS";
 
+#define HALL_END_WAVE_HOLD_MS 2000U
+#define HALL_END_CHANGE_MS 400U
 #define HALL_POS_STABLE_MS 150U
 #define HALL_POS_TAKEBACK_MS 600U
 #define HALL_POS_DIFF_CAP 8
@@ -67,6 +69,10 @@ static bool s_takeback_off_said;
 static bool s_chaos_restore;
 static bool s_idle_handover;
 static bool s_idle_repaint_pending;
+static uint8_t s_end_occ[64];
+static bool s_end_occ_valid;
+static uint32_t s_end_since_ms;
+static uint32_t s_end_diff_since_ms;
 static bool s_chaos_match;
 static uint32_t s_chaos_match_since_ms;
 static bool s_castle_paint;
@@ -1687,20 +1693,44 @@ void game_hall_position_service(void) {
   }
   /* First lift or place after the result: drop the wave and open a new game
    * the same way boot does. The clock and white's hints wait for the start
-   * position. Occupancy only � a brief identity glitch must not end the wave. */
+   * position. Occupancy only — a brief identity glitch must not end the wave.
+   * The king is already in the air when a hold-to-resign finishes, so the
+   * baseline is this occupancy, and the wave keeps at least two seconds. */
   if (current_game_state == GAME_STATE_FINISHED) {
     uint8_t end_occ[64];
+    uint32_t end_now;
     if (!hall_i2c_squares_readings_usable()) {
       return;
     }
     squares_get_state(end_occ);
-    if (occupancy_equal(s_last_valid, end_occ)) {
+    end_now = (uint32_t)(esp_timer_get_time() / 1000);
+    if (!s_end_occ_valid) {
+      memcpy(s_end_occ, end_occ, sizeof(s_end_occ));
+      s_end_occ_valid = true;
+      s_end_since_ms = end_now;
+      s_end_diff_since_ms = 0;
       return;
     }
-    ESP_LOGI(TAG, "End position changed � opening setup");
+    if ((uint32_t)(end_now - s_end_since_ms) < HALL_END_WAVE_HOLD_MS ||
+        memcmp(s_end_occ, end_occ, sizeof(s_end_occ)) == 0) {
+      s_end_diff_since_ms = 0;
+      return;
+    }
+    if (s_end_diff_since_ms == 0) {
+      s_end_diff_since_ms = end_now;
+      return;
+    }
+    if ((uint32_t)(end_now - s_end_diff_since_ms) < HALL_END_CHANGE_MS) {
+      return;
+    }
+    ESP_LOGI(TAG, "End position changed — opening setup");
+    s_end_occ_valid = false;
+    s_end_diff_since_ms = 0;
     game_start_new_game();
     return;
   }
+  s_end_occ_valid = false;
+  s_end_diff_since_ms = 0;
   /* Puzzle setup owns the restore picture. Classifying here cancels it,
    * and idle lights stay off, so the board goes dark. */
   if (game_is_puzzle_setup_active()) {
