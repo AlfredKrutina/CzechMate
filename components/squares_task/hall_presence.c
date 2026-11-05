@@ -38,12 +38,14 @@ static uint8_t hall_presence_reoccupy_need(const hall_presence_state_t *st) {
     if (st->lift_block) {
         return HALL_PRESENCE_STABLE_SCANS;
     }
+#else
+    (void)st;
 #endif
     return HALL_PRESENCE_REOCCUPY_SCANS;
 }
 
-static bool hall_presence_peak_rearm_active(const hall_presence_state_t *st) {
 #if HALL_LIFT_HYSTERESIS
+static bool hall_presence_peak_rearm_active(const hall_presence_state_t *st) {
     if (!st->lift_block || st->lift_vacant_peak <= 0) {
         return false;
     }
@@ -54,11 +56,8 @@ static bool hall_presence_peak_rearm_active(const hall_presence_state_t *st) {
         return false;
     }
     return true;
-#else
-    (void)st;
-    return false;
-#endif
 }
+#endif
 
 static bool hall_presence_rearm_ok(const hall_presence_inputs_t *in,
                                    const hall_presence_state_t *st) {

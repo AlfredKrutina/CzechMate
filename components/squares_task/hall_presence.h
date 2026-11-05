@@ -22,7 +22,7 @@
 #define HALL_LIFT_REARM_MAX_SCANS         (HALL_LIFT_REARM_MAX_MS / HALL_PRESENCE_CYCLE_MS)
 
 #ifndef HALL_LIFT_HYSTERESIS
-#define HALL_LIFT_HYSTERESIS              1
+#define HALL_LIFT_HYSTERESIS              0
 #endif
 
 typedef struct {
