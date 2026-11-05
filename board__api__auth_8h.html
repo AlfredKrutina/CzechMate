@@ -144,7 +144,7 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Board REST API token (NVS) + HTTP Bearer check for sensitive endpoints. </p>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md74"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md72"></a>
 Auth matrix (HTTP)</h2>
 <ul>
 <li>Public GET (No Bearer): eg <span class="tt">/api/status</span>, <span class="tt">/api/board</span>, <span class="tt">/api/game/snapshot</span>, <span class="tt">/api/wifi/status</span>, <span class="tt">/api/system/firmware</span>, <span class="tt">/api/system/ota/status</span> (onboarding).</li>
@@ -152,7 +152,7 @@ Auth matrix (HTTP)</h2>
 </ul>
 <p>Command token (separate from <span class="tt">api_tok</span>): issued when a device finishes pairing. <span class="tt">POST /api/move</span> and a command frame on <span class="tt">/ws</span> always require one of the three device tokens, even when WEB_LOCK is off. Snapshot reads stay open. While one commander holds the board, a different valid token gets <span class="tt">board_busy</span>.</p>
 <p>Token: 32B random, in header as <span class="tt">Authorization: Bearer &lt;64 hex characters&gt;</span>.</p>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md75"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md73"></a>
 BLE (see ble_task_conn_is_encrypted)</h2>
 <ul>
 <li><span class="tt">ota_start</span>, <span class="tt">ota_ble_begin</span>, <span class="tt">ota_ble_abort</span>, <span class="tt">ota_ble_status</span>, <span class="tt">wifi_sta_config</span>, <span class="tt">wifi_ap_set</span>, <span class="tt">factory_reset</span>: require an active encrypted link (after SMP). </li>

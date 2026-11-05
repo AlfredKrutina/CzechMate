@@ -1,7 +1,7 @@
 var searchData=
 [
   ['id_0',['id',['../structgame__puzzle__definition__t.html#a7134e6b932f8a5ceef6c408a73540cdf',1,'game_puzzle_definition_t::id'],['../structanimation__state__struct.html#a732e0dbd6e57d26471ce3f333a133f2c',1,'animation_state_struct::id'],['../structactive__error__t.html#a86b4c2d315025f29e9406e5a7eb3cfb9',1,'active_error_t::id'],['../structsurvey__ack__meta__t.html#aca5d49ee8239a657f31dd6788122fedf',1,'survey_ack_meta_t::id']]],
-  ['implemented_1',['CHESS RULES IMPLEMENTED',['../game__task_8c.html#autotoc_md18',1,'']]],
+  ['implemented_1',['CHESS RULES IMPLEMENTED',['../game__task_8c.html#autotoc_md16',1,'']]],
   ['in_5fcheck_2',['in_check',['../structposition__status__t.html#a65027d531a50e154249c071ce9a9eada',1,'position_status_t']]],
   ['in_5fprogress_3',['in_progress',['../structcastling__state__t.html#a1705abfdc6a05d4bec2293871b7b7fd1',1,'castling_state_t']]],
   ['in_5fuse_4',['in_use',['../structshared__buffer__t.html#ac84993dc918ca7386ae7b700c99039ef',1,'shared_buffer_t']]],
@@ -12,7 +12,7 @@ var searchData=
   ['init_5fendgame_5fanimation_5fsystem_9',['init_endgame_animation_system',['../game__led__animations_8h.html#aff587ca038d004104b274391cb221113',1,'game_led_animations.h']]],
   ['initial_5ftime_5fms_10',['initial_time_ms',['../structtime__control__config__t.html#a76ce0ead776d0b8fcd0350151eb96ba4',1,'time_control_config_t']]],
   ['initialize_5fchess_5fgame_11',['initialize_chess_game',['../main_8c.html#acf3129796410e265806bde4edacf4d85',1,'main.c']]],
-  ['initialized_12',['initialized',['../structendgame__wave__state__t.html#ab0ac52042b1175b54102095a79d802cd',1,'endgame_wave_state_t']]],
+  ['initialized_12',['initialized',['../structendgame__wave__state__t.html#ab0ac52042b1175b54102095a79d802cd',1,'endgame_wave_state_t::initialized'],['../index.html#autotoc_md96',1,'V1 pin map (archived, not initialized)']]],
   ['inject_5fweb_5fstatus_5ffields_13',['inject_web_status_fields',['../web__server__internal_8h.html#a7ff67d437127bf998076f532413e16b6',1,'inject_web_status_fields(char *buf, size_t buf_size):&#160;web_handlers_game.c'],['../web__handlers__game_8c.html#a7ff67d437127bf998076f532413e16b6',1,'inject_web_status_fields(char *buf, size_t buf_size):&#160;web_handlers_game.c']]],
   ['input_5fbuffer_14',['input_buffer',['../uart__task_8c.html#ad70cd585173babaab9affd32c7f8abee',1,'uart_task.c']]],
   ['input_5fbuffer_5fadd_5fchar_15',['input_buffer_add_char',['../uart__task_8c.html#a8c1834a32f3797bf298c2940eb5ba7e6',1,'uart_task.c']]],
@@ -49,6 +49,6 @@ var searchData=
   ['is_5fwhite_5fpiece_46',['is_white_piece',['../movegen_8c.html#a18cc0c3e07a96cde1a506af2aa9ca6e7',1,'movegen.c']]],
   ['is_5fwhite_5fturn_47',['is_white_turn',['../structchess__timer__t.html#a5fbbe88e66de5ea14c6570f5526a39ae',1,'chess_timer_t']]],
   ['issue_5flocked_48',['issue_locked',['../board__api__auth_8c.html#a7cfc882413a5c1a4561d5fd690597fe8',1,'board_api_auth.c']]],
-  ['it_20work_49',['IT WORK',['../button__task_8c.html#autotoc_md3',1,'HOW DOES IT WORK?'],['../led__task_8c.html#autotoc_md32',1,'HOW DOES IT WORK?'],['../squares__task_8c.html#autotoc_md49',1,'HOW DOES IT WORK?']]],
-  ['it_20works_50',['IT WORKS',['../game__task_8c.html#autotoc_md14',1,'HOW IT WORKS'],['../uart__task_8c.html#autotoc_md62',1,'HOW IT WORKS']]]
+  ['it_20work_49',['IT WORK',['../led__task_8c.html#autotoc_md30',1,'HOW DOES IT WORK?'],['../squares__task_8c.html#autotoc_md47',1,'HOW DOES IT WORK?']]],
+  ['it_20works_50',['IT WORKS',['../game__task_8c.html#autotoc_md12',1,'HOW IT WORKS'],['../uart__task_8c.html#autotoc_md60',1,'HOW IT WORKS']]]
 ];

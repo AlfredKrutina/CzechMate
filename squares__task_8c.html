@@ -328,7 +328,7 @@ Variables</h2></td></tr>
 <li>I2C Hall (CONFIG_CHESS_MATRIX_INPUT_I2C_HALL): reads raw ADC pairs from 4x STM32 slaves, runs the ported POC classification (energy + hysteresis + debounce) and collapses each pair to occupancy 0/1. Stable piece type and color are stable POC outputs; game_task uses them for move legality when this input mode is enabled.</li>
 </ul>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md47"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md45"></a>
 WHAT DID THIS FILE DO?</h1>
 <p>This task scans the chest and detects the movement of pieces:</p><ol type="1">
 <li>Multiplexed 8x8 matrix scan (Language contacts under each field)</li>
@@ -338,7 +338,7 @@ WHAT DID THIS FILE DO?</h1>
 <li>Error detection (bad sequence of events)</li>
 </ol>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md49"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md47"></a>
 HOW DOES IT WORK?</h1>
 <p>MULTIPLEX SCANNING:</p><ul>
 <li>Activate row 0 (row select GPIO)</li>
@@ -360,14 +360,14 @@ HOW DOES IT WORK?</h1>
 <li>Send to game_command_queue</li>
 </ul>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md51"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md49"></a>
 COMMUNICATION (FIFOS)</h1>
 <p>QUEUE - We send detected moves:</p><ul>
 <li><a class="el" href="game__dispatch_8c.html#aad72af0371b11489c0dd92fdd2128e3b" title="Process game commands from the queue.">game_submit()</a> -&gt; lift, drop, and guard commands</li>
 </ul>
 <p>NO MUTEX - Task is read-only (only read GPIO)</p>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md53"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md51"></a>
 HARDWARE (GPIO MAPPING)</h1>
 <p>ROW SELECT (8 pin, active LOW):</p><ul>
 <li>GPIO 10-17: Select the box row</li>
@@ -380,7 +380,7 @@ HARDWARE (GPIO MAPPING)</h1>
 <li>HIGH = Empty field</li>
 </ul>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md55"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md53"></a>
 CRITIC OF RULES</h1>
 <dl class="section warning"><dt>Warning</dt><dd>WHAT NOT TO DO:</dd></dl>
 <ol type="1">
@@ -390,7 +390,7 @@ CRITIC OF RULES</h1>
 <li>ALWAYS check queue overflow! If game_task is busy, the queue may fill up</li>
 </ol>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md57"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md55"></a>
 TABLE OF CONTENTS</h1>
 <p>Section 1: GPIO Init ............................ line 80 Section 2: Matrix Scanning ...................... line 200 Section 3: Debouncing Logic ..................... line 350 Section 4: Event Detection ...................... line 500 Section 5: Main Matrix Task ..................... line 750</p>
 <hr  />
@@ -454,7 +454,7 @@ TABLE OF CONTENTS</h1>
 <p>Cancels the local matrix guard and aligns the baseline (previous = HW state). </p>
 <p>Calls game_task when we ignore the matrix guard on the game side (tutorial / puzzle), or after game_reset — to avoid stuck detection and invalid last_piece_lifted didn't cause false "multiple lifts at once". </p>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l01118">1118</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00871">871</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -477,7 +477,7 @@ TABLE OF CONTENTS</h1>
 <p>Restore normal matrix scanning mode after button scan window.</p>
 <p>This function is called after button scan window. The Matrix can continue in normal scanning. </p>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l01180">1180</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00929">929</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -510,7 +510,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00831">831</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00584">584</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -532,7 +532,7 @@ TABLE OF CONTENTS</h1>
 <p>Detect moves from a matrix. </p>
 <p>Search for transitions 1-&gt;0 (figure raised) and 0-&gt;1 (figure laid down) and generates matrix events. </p>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00675">675</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00576">576</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -553,7 +553,7 @@ TABLE OF CONTENTS</h1>
 
 <p>Square waiting for DROP (255 = none), for races with a game pickup queue. </p>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l01084">1084</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00837">837</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -580,7 +580,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00878">878</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00631">631</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -602,7 +602,7 @@ TABLE OF CONTENTS</h1>
 <p>Set expected physical occupancy for matrix guard (0/1 per field). </p>
 <p>Matches the recovery target with the logic board (board[]). Calls game_task on activation guard or after NVS restore. </p>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l01054">1054</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00807">807</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -623,7 +623,7 @@ TABLE OF CONTENTS</h1>
 
 <p>Is the matrix guard active on the matrix side? </p>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l01082">1082</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00835">835</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -651,7 +651,7 @@ TABLE OF CONTENTS</h1>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Field number (0-63) </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00861">861</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00614">614</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -674,7 +674,7 @@ TABLE OF CONTENTS</h1>
 <p>Verify if matrix pins are released for button scan.</p>
 <dl class="section return"><dt>Returns</dt><dd>true if all row pins are HIGH (released) </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l01193">1193</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00942">942</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -696,7 +696,7 @@ TABLE OF CONTENTS</h1>
 <p>List the current state of the matrix. </p>
 <p>Prints an 8x8 matrix with the current state of all fields (0 = empty, 1 = figure). </p>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00886">886</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00639">639</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -718,7 +718,7 @@ TABLE OF CONTENTS</h1>
 <p>Process matrix commands from the queue. </p>
 <p>Reads commands from squares_command_queue and executes them (scan, reset, test, calibrate, enable/disable). </p>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00983">983</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00736">736</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -741,7 +741,7 @@ TABLE OF CONTENTS</h1>
 <p>Set all row pins to HIGH (inactive state) to button task could clean column pins without interference.</p>
 <p>This function is called before the button scan window (20-25ms). All row pins are set to HIGH (pulled up) so column pins can be safely read for button detection. </p>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l01160">1160</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00913">913</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -763,7 +763,7 @@ TABLE OF CONTENTS</h1>
 <p>Reset the matrix state. </p>
 <p>Clears all internal matrix states and resets pull detection. </p>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l01027">1027</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00780">780</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -785,7 +785,7 @@ TABLE OF CONTENTS</h1>
 <p>Scan the entire matrix. </p>
 <p>Scans all 8 rows of the matrix and detects state changes. Uses mutex for thread-safe access to array state. </p>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00399">399</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00308">308</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -813,7 +813,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00351">351</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00263">263</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -898,7 +898,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00556">556</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00457">457</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -944,7 +944,7 @@ TABLE OF CONTENTS</h1>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00588">588</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00489">489</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -979,7 +979,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00526">526</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00427">427</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -1008,7 +1008,7 @@ TABLE OF CONTENTS</h1>
 
 <p>Moves are accepted only after boot, and after Hall has locked a real baseline once. </p>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00382">382</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00293">293</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -1041,7 +1041,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00956">956</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00709">709</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -1073,7 +1073,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00849">849</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00602">602</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -1101,7 +1101,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l01210">1210</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00952">952</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -1120,7 +1120,7 @@ TABLE OF CONTENTS</h1>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00910">910</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00663">663</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>
@@ -1289,7 +1289,7 @@ TABLE OF CONTENTS</h1>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00376">376</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="squares__task_8c_source.html#l00287">287</a> of file <a class="el" href="squares__task_8c_source.html">squares_task.c</a>.</p>
 
 </div>
 </div>

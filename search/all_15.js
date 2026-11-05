@@ -108,7 +108,7 @@ var searchData=
   ['update_5ffunc_105',['update_func',['../structanimation__state__struct.html#ab1a5f1afbbdb0e1a7cf3eb90ddc29206',1,'animation_state_struct']]],
   ['url_5fis_5fhttp_106',['url_is_http',['../ota__update_8c.html#a88acbd3d46c17168c091474faddfccce',1,'ota_update.c']]],
   ['url_5fis_5fhttps_107',['url_is_https',['../ota__update_8c.html#a83cac12df33215375d8151d0675b866b',1,'ota_update.c']]],
-  ['usage_108',['Usage',['../index.html#autotoc_md104',1,'']]],
+  ['usage_108',['Usage',['../index.html#autotoc_md102',1,'']]],
   ['usage_109',['usage',['../structuart__command__t.html#af54b176c77095097bdde582f4d1cbc26',1,'uart_command_t']]],
   ['usb_5fconsole_5fkeep_5fclock_110',['usb_console_keep_clock',['../main_8c.html#a75404e79e1be89eeb4d781c73c39202b',1,'main.c']]],
   ['used_111',['used',['../structchess__i2c__dev__slot__t.html#a9661d2ea94ddf4b02fdd0f14d492674c',1,'chess_i2c_dev_slot_t']]],

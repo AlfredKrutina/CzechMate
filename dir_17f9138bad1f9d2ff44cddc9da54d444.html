@@ -171,13 +171,13 @@ Files</h2></td></tr>
 <tr class="memdesc:web__ws_8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">WebSocket handler and snapshot broadcast (/ws). <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md76"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md74"></a>
 web_server_task</h1>
 <p>WiFi (AP/STA), HTTP machine API, WebSocket <span class="tt">/ws</span>, OTA, and the BLE JSON bridge. Flutter and the Windows client call this component. They do not open a browser page on the board.</p>
 <p><span class="tt">GET /</span> returns a short JSON document (<span class="tt">service</span>, <span class="tt">api</span>, <span class="tt">websocket</span>). <span class="tt">GET /chess_app.js</span> returns 404 JSON. Piece PNGs are not embedded.</p>
 <p>The human chess page (JS, CSS-less modules, piece PNGs, and the scripts that packed them into firmware) is in <span class="tt">kos/unused/web_ui/</span>. It is not compiled and not served.</p>
 <p><span class="tt">tools/mqtt_panel_snippet.txt</span> stays here. It is a Home Assistant MQTT panel snippet for <span class="tt">ha_light_task</span>, not the browser chess page.</p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md77"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md75"></a>
 Command token, puzzle, resign</h1>
 <p>Game writes (<span class="tt">POST /api/move</span>, a command frame on <span class="tt">/ws</span>) require <span class="tt">Authorization: Bearer &lt;64 hex&gt;</span> from pairing. The token is issued on BLE <span class="tt">cmd_ack</span> after a new bond, or by <span class="tt">POST /api/pair</span> while the 60 s pairing window is open. Up to three device slots, one commander. A different valid token gets <span class="tt">board_busy</span>. Snapshot GET does not use this token.</p>
 <table class="markdownTable">

@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['occupied_0',['occupied',['../structhall__square__reading__t.html#ae2ad35c6cf1bf4f20c99b5f6b98272ca',1,'hall_square_reading_t']]],
-  ['of_20contents_1',['OF CONTENTS',['../button__task_8c.html#autotoc_md9',1,'TABLE OF CONTENTS'],['../game__task_8c.html#autotoc_md20',1,'TABLE OF CONTENTS'],['../squares__task_8c.html#autotoc_md57',1,'TABLE OF CONTENTS'],['../uart__task_8c.html#autotoc_md68',1,'TABLE OF CONTENTS'],['../web__server__task_8c.html#autotoc_md89',1,'TABLE OF CONTENTS']]],
-  ['of_20contents_20navigation_2',['TABLE OF CONTENTS (NAVIGATION)',['../led__task_8c.html#autotoc_md40',1,'']]],
-  ['of_20rules_3',['OF RULES',['../button__task_8c.html#autotoc_md7',1,'CRITIC OF RULES'],['../squares__task_8c.html#autotoc_md55',1,'CRITIC OF RULES'],['../web__server__task_8c.html#autotoc_md87',1,'CRITIC OF RULES']]],
+  ['occupied_0',['occupied',['../structhall__presence__state__t.html#a67f244f1b99bf43e51cf675f68693765',1,'hall_presence_state_t::occupied'],['../structhall__square__reading__t.html#ae2ad35c6cf1bf4f20c99b5f6b98272ca',1,'hall_square_reading_t::occupied']]],
+  ['of_20contents_1',['OF CONTENTS',['../button__task_8c.html#autotoc_md7',1,'TABLE OF CONTENTS'],['../game__task_8c.html#autotoc_md18',1,'TABLE OF CONTENTS'],['../squares__task_8c.html#autotoc_md55',1,'TABLE OF CONTENTS'],['../uart__task_8c.html#autotoc_md66',1,'TABLE OF CONTENTS'],['../web__server__task_8c.html#autotoc_md87',1,'TABLE OF CONTENTS']]],
+  ['of_20contents_20navigation_2',['TABLE OF CONTENTS (NAVIGATION)',['../led__task_8c.html#autotoc_md38',1,'']]],
+  ['of_20rules_3',['OF RULES',['../button__task_8c.html#autotoc_md5',1,'CRITIC OF RULES'],['../squares__task_8c.html#autotoc_md53',1,'CRITIC OF RULES'],['../web__server__task_8c.html#autotoc_md85',1,'CRITIC OF RULES']]],
   ['on_5fboard_4',['on_board',['../movegen_8c.html#ad47d896e0e0a8a0bf2cbaab3609bb0f9',1,'on_board(int row, int col):&#160;movegen.c'],['../position_8c.html#ad47d896e0e0a8a0bf2cbaab3609bb0f9',1,'on_board(int row, int col):&#160;position.c']]],
   ['on_5fcomplete_5',['on_complete',['../structanimation__state__struct.html#a1257c5b14f68eec69cc6a480895748d0',1,'animation_state_struct']]],
   ['on_5fdrop_6',['on_drop',['../structgame__mode.html#a35d5a966568893e5bb732248d75bf117',1,'game_mode']]],
@@ -68,7 +68,7 @@ var searchData=
   ['opponent_5foriginal_5frow_65',['opponent_original_row',['../game__board__machine_8c.html#ae11c7fc1300aa53228b21f38059bda32',1,'opponent_original_row:&#160;game_board_machine.c'],['../game__board__machine_8h.html#ae11c7fc1300aa53228b21f38059bda32',1,'opponent_original_row:&#160;game_board_machine.c']]],
   ['opponent_5fpiece_5fmoved_66',['opponent_piece_moved',['../game__board__machine_8c.html#a43cb8f21829cb4cc35a7335fdf1465c1',1,'opponent_piece_moved:&#160;game_board_machine.c'],['../game__board__machine_8h.html#a43cb8f21829cb4cc35a7335fdf1465c1',1,'opponent_piece_moved:&#160;game_board_machine.c']]],
   ['opponent_5fpiece_5ftype_67',['opponent_piece_type',['../game__board__machine_8c.html#a229b05a8e7118cfca7f6bec35c02334b',1,'opponent_piece_type:&#160;game_board_machine.c'],['../game__board__machine_8h.html#a229b05a8e7118cfca7f6bec35c02334b',1,'opponent_piece_type:&#160;game_board_machine.c']]],
-  ['orientation_20statement_68',['REST (orientation statement)',['../web__server__task_8c.html#autotoc_md81',1,'']]],
+  ['orientation_20statement_68',['REST (orientation statement)',['../web__server__task_8c.html#autotoc_md79',1,'']]],
   ['original_5fcolor_69',['original_color',['../structled__duration__state__t.html#a8aba5c7b290cef110bf2e11ee4c7c1e6',1,'led_duration_state_t']]],
   ['original_5fvalid_5fcol_70',['original_valid_col',['../structgame__task__error__recovery__t.html#aceb518a700ae80e3c908fbf79ca4a055',1,'game_task_error_recovery_t']]],
   ['original_5fvalid_5frow_71',['original_valid_row',['../structgame__task__error__recovery__t.html#acc30154e227394cdc9060a9aad054763',1,'game_task_error_recovery_t']]],
@@ -137,7 +137,6 @@ var searchData=
   ['out_5fnone_134',['out_none',['../game__board__machine_8c.html#a47f7f24d1d1a1ea7cf95e9d25ecfeab2',1,'game_board_machine.c']]],
   ['out_5fr_135',['out_r',['../structled__tgt__t.html#ac860692cd258761846d507edf20a70a4',1,'led_tgt_t']]],
   ['out_5freject_136',['out_reject',['../game__board__machine_8c.html#a683dbd599acf22bc50f45dc0fcf6f2cf',1,'game_board_machine.c']]],
-  ['overview_137',['V1 Prototype Overview',['../index.html#autotoc_md98',1,'']]],
-  ['own_5fpiece_138',['own_piece',['../movegen_8c.html#ae25ddd171195c8b988f4e959be74c064',1,'movegen.c']]],
-  ['owner_139',['owner',['../structshared__buffer__t.html#aa9d19708eca1a5a3dd0589e3e1f73ad6',1,'shared_buffer_t']]]
+  ['own_5fpiece_137',['own_piece',['../movegen_8c.html#ae25ddd171195c8b988f4e959be74c064',1,'movegen.c']]],
+  ['owner_138',['owner',['../structshared__buffer__t.html#aa9d19708eca1a5a3dd0589e3e1f73ad6',1,'shared_buffer_t']]]
 ];

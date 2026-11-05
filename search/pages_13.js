@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['v1_20prototype_20overview_0',['V1 Prototype Overview',['../index.html#autotoc_md98',1,'']]]
+  ['v1_20pin_20map_20archived_20not_20initialized_0',['V1 pin map (archived, not initialized)',['../index.html#autotoc_md96',1,'']]]
 ];

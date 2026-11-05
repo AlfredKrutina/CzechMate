@@ -1,11 +1,5 @@
 var NAVTREEINDEX6 =
 {
-"game__led__animations_8h.html#a30603ef39ed3a32a5ae1be1274874159a2817775da3ceef1a44819ed7264c0b99":[8,0,0,6,0,0,8,4],
-"game__led__animations_8h.html#a30603ef39ed3a32a5ae1be1274874159a2e296498d5b85c7d2d71fbd804fc78d9":[8,0,0,6,0,0,8,5],
-"game__led__animations_8h.html#a30603ef39ed3a32a5ae1be1274874159a53c907e548a6c685bad62bfe17a88f37":[8,0,0,6,0,0,8,3],
-"game__led__animations_8h.html#a30603ef39ed3a32a5ae1be1274874159a7559cb124fcc149b6ba6375635c70757":[8,0,0,6,0,0,8,0],
-"game__led__animations_8h.html#a30603ef39ed3a32a5ae1be1274874159a79de3a208cf30fd7a25d2232fdcdfde6":[8,0,0,6,0,0,8,1],
-"game__led__animations_8h.html#a512b0ba5745a638b00545a16423c4e17":[8,0,0,6,0,0,15],
 "game__led__animations_8h.html#a657e1bb5d40ff05278f1fd817295a34b":[8,0,0,6,0,0,13],
 "game__led__animations_8h.html#a7d2e178a6334fe293dd266e15b194ceb":[8,0,0,6,0,0,18],
 "game__led__animations_8h.html#a9c35ac742c83bf78240d93599dd54556":[8,0,0,6,0,0,12],
@@ -249,5 +243,11 @@ var NAVTREEINDEX6 =
 "game__opening__trainer_8c.html#add2affa1f220901931edd0d4664449ce":[8,0,0,7,23,7],
 "game__opening__trainer_8c.html#add2affa1f220901931edd0d4664449cea0539cf8cc1a54baea109e8edf71c9721":[8,0,0,7,23,7,7],
 "game__opening__trainer_8c.html#add2affa1f220901931edd0d4664449cea093593c01385d5d7555911de87ea1504":[8,0,0,7,23,7,6],
-"game__opening__trainer_8c.html#add2affa1f220901931edd0d4664449cea0f87dc16741f2269f6ffa6c79e529cd0":[8,0,0,7,23,7,1]
+"game__opening__trainer_8c.html#add2affa1f220901931edd0d4664449cea0f87dc16741f2269f6ffa6c79e529cd0":[8,0,0,7,23,7,1],
+"game__opening__trainer_8c.html#add2affa1f220901931edd0d4664449cea4f92f3e9db7f875ed8892a20822642f9":[8,0,0,7,23,7,5],
+"game__opening__trainer_8c.html#add2affa1f220901931edd0d4664449cea5f990a4ad5caf4076b19b56e53c13c58":[8,0,0,7,23,7,3],
+"game__opening__trainer_8c.html#add2affa1f220901931edd0d4664449cea7a80eec8ddd115cf2c13374e42397227":[8,0,0,7,23,7,0],
+"game__opening__trainer_8c.html#add2affa1f220901931edd0d4664449cea7ac66001ecc5a8bcba3b92d3108a9b49":[8,0,0,7,23,7,4],
+"game__opening__trainer_8c.html#add2affa1f220901931edd0d4664449ceaacf2b93cb3dcb18f28ca7773ec5679fe":[8,0,0,7,23,7,2],
+"game__opening__trainer_8c.html#ae4cf6b74e91ab15d1959e3b8184a8adc":[8,0,0,7,23,23]
 };

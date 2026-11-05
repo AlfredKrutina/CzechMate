@@ -503,9 +503,9 @@ Variables</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>UART Terminal Task - diagnostics console (no chess commands). </p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md59"></a>
-autotoc_md59</h1>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md60"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md57"></a>
+autotoc_md57</h1>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md58"></a>
 WHAT THIS FILE DOES</h1>
 <p>This task is a diagnostics terminal. Chess moves do not enter here:</p><ol type="1">
 <li>Command line with editing (backspace, command history)</li>
@@ -516,7 +516,7 @@ WHAT THIS FILE DOES</h1>
 <li>Test commands for LED, matrix, animations</li>
 </ol>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md62"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md60"></a>
 HOW IT WORKS</h1>
 <p>STARTUP:</p><ul>
 <li>Initialize UART (115200 baud)</li>
@@ -537,7 +537,7 @@ HOW IT WORKS</h1>
 <li>Print result }</li>
 </ol>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md64"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md62"></a>
 COMMUNICATION (FIFOS &amp; MUTEXES)</h1>
 <p>QUEUES - This task does not use game_command_queue. Chess commands enter through <a class="el" href="game__dispatch_8c.html#aad72af0371b11489c0dd92fdd2128e3b" title="Process game commands from the queue.">game_submit()</a> from web, BLE, squares, and main:</p><ul>
 <li>web_server_queue -&gt; Commands for web server (wifi config...)</li>
@@ -551,7 +551,7 @@ COMMUNICATION (FIFOS &amp; MUTEXES)</h1>
 <div class="line">xSemaphoreGive(<a class="code hl_variable" href="#a8eca84d3e2c7c0adf364819e74b1bd9b">uart_mutex</a>);                  <span class="comment">// Unlock</span></div>
 <div class="ttc" id="auart__task_8c_html_a8eca84d3e2c7c0adf364819e74b1bd9b"><div class="ttname"><a href="#a8eca84d3e2c7c0adf364819e74b1bd9b">uart_mutex</a></div><div class="ttdeci">SemaphoreHandle_t uart_mutex</div><div class="ttdoc">Global UART mutex for clean output.</div><div class="ttdef"><b>Definition</b> <a href="main_8c_source.html#l00264">main.c:264</a></div></div>
 </div><!-- fragment --><hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md66"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md64"></a>
 COMMAND TABLE</h1>
 <p>Commands are organized in a table with function pointers:</p><ul>
 <li>cmd_name: Command name (e.g. "HELP")</li>
@@ -568,12 +568,12 @@ COMMAND TABLE</h1>
 <li>Debug: squares_debug, queue_stats</li>
 </ul>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md68"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md66"></a>
 TABLE OF CONTENTS</h1>
 <p>Section 1: WDT Wrapper Functions ................... line 70 Section 2: UART Driver Functions ................... line 160 Section 3: Input Buffer &amp; History .................. line 250 Section 4: Command Table Definition ................ line 760 Section 5: Command Handlers (50+ functions) ........ line 1800 Section 6: Formatting &amp; Output Functions ........... line 350 Section 7: Main UART Task .......................... line 6200</p>
 <p>TIP: Ctrl+G to jump to a line</p>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md70"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md68"></a>
 DEPENDENCIES</h1>
 <ul>
 <li>game_task: chess commands enter through <a class="el" href="game__dispatch_8c.html#aad72af0371b11489c0dd92fdd2128e3b" title="Process game commands from the queue.">game_submit()</a> from web, BLE, squares, and main (not this CLI)</li>
@@ -583,7 +583,7 @@ DEPENDENCIES</h1>
 <li>config_manager: Save/load configuration (NVS)</li>
 </ul>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md72"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md70"></a>
 CRITICAL RULES</h1>
 <dl class="section warning"><dt>Warning</dt><dd>DO NOT:</dd></dl>
 <ol type="1">

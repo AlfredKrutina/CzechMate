@@ -1578,81 +1578,79 @@ $(function(){initNavTree('stm32__i2c__bl_8c_source.html','',''); });
 <div class="line"><a id="l01463" name="l01463"></a><span class="lineno"> 1463</span>    any_nrst = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l01464" name="l01464"></a><span class="lineno"> 1464</span><span class="preprocessor">#if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL</span></div>
 <div class="line"><a id="l01465" name="l01465"></a><span class="lineno"> 1465</span>    uint8_t addr7 = bl_hall_segment_addr7(seg);</div>
-<div class="line"><a id="l01466" name="l01466"></a><span class="lineno"> 1466</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l01467" name="l01467"></a><span class="lineno"> 1467</span>    uint8_t addr7 = (uint8_t)(0x30u + seg);</div>
-<div class="line"><a id="l01468" name="l01468"></a><span class="lineno"> 1468</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l01469" name="l01469"></a><span class="lineno"> 1469</span>    stm32_part_fill_ctx_t fill_ctx = {</div>
-<div class="line"><a id="l01470" name="l01470"></a><span class="lineno"> 1470</span>        .part = part,</div>
-<div class="line"><a id="l01471" name="l01471"></a><span class="lineno"> 1471</span>        .addr7 = addr7,</div>
-<div class="line"><a id="l01472" name="l01472"></a><span class="lineno"> 1472</span>        .addr_off = addr_off,</div>
-<div class="line"><a id="l01473" name="l01473"></a><span class="lineno"> 1473</span>    };</div>
-<div class="line"><a id="l01474" name="l01474"></a><span class="lineno"> 1474</span>    ESP_LOGI(TAG_A,</div>
-<div class="line"><a id="l01475" name="l01475"></a><span class="lineno"> 1475</span>             <span class="stringliteral">&quot;segment %u: uploading %&quot;</span> PRIu32 <span class="stringliteral">&quot; B → STM @0x%08&quot;</span> PRIx32</div>
-<div class="line"><a id="l01476" name="l01476"></a><span class="lineno"> 1476</span>             <span class="stringliteral">&quot; as I2C 0x%02x&quot;</span>,</div>
-<div class="line"><a id="l01477" name="l01477"></a><span class="lineno"> 1477</span>             seg, (uint32_t)eff, base, addr7);</div>
-<div class="line"><a id="l01478" name="l01478"></a><span class="lineno"> 1478</span>    esp_err_t fe = stm32_i2c_bl_flash_binary_impl(</div>
-<div class="line"><a id="l01479" name="l01479"></a><span class="lineno"> 1479</span>        (uint8_t)seg, use_boot, base, eff, stm32_bl_fill_patched, &amp;fill_ctx);</div>
-<div class="line"><a id="l01480" name="l01480"></a><span class="lineno"> 1480</span>    <span class="keywordflow">if</span> (fe == ESP_ERR_NOT_FOUND) {</div>
-<div class="line"><a id="l01481" name="l01481"></a><span class="lineno"> 1481</span>      ESP_LOGW(TAG_A, <span class="stringliteral">&quot;segment %u: ROM bootloader neodpověděl&quot;</span>, seg);</div>
-<div class="line"><a id="l01482" name="l01482"></a><span class="lineno"> 1482</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (fe != ESP_OK) {</div>
-<div class="line"><a id="l01483" name="l01483"></a><span class="lineno"> 1483</span>      ESP_LOGE(TAG_A, <span class="stringliteral">&quot;segment %u: %s&quot;</span>, seg, esp_err_to_name(fe));</div>
-<div class="line"><a id="l01484" name="l01484"></a><span class="lineno"> 1484</span>      all_ok = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l01485" name="l01485"></a><span class="lineno"> 1485</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01486" name="l01486"></a><span class="lineno"> 1486</span>      written_mask |= (1u &lt;&lt; seg);</div>
-<div class="line"><a id="l01487" name="l01487"></a><span class="lineno"> 1487</span>      ESP_LOGI(TAG_A, <span class="stringliteral">&quot;segment %u: hotovo (I2C 0x%02x)&quot;</span>, seg, addr7);</div>
-<div class="line"><a id="l01488" name="l01488"></a><span class="lineno"> 1488</span>    }</div>
-<div class="line"><a id="l01489" name="l01489"></a><span class="lineno"> 1489</span>  }</div>
-<div class="line"><a id="l01490" name="l01490"></a><span class="lineno"> 1490</span> </div>
-<div class="line"><a id="l01491" name="l01491"></a><span class="lineno"> 1491</span>  <span class="keywordflow">if</span> (!any_nrst) {</div>
-<div class="line"><a id="l01492" name="l01492"></a><span class="lineno"> 1492</span>    ESP_LOGW(TAG_A,</div>
-<div class="line"><a id="l01493" name="l01493"></a><span class="lineno"> 1493</span>             <span class="stringliteral">&quot;no NRST GPIO — set CHESS_STM32_BL_NRST_GPIO_SEG* in menuconfig&quot;</span>);</div>
-<div class="line"><a id="l01494" name="l01494"></a><span class="lineno"> 1494</span>  }</div>
-<div class="line"><a id="l01495" name="l01495"></a><span class="lineno"> 1495</span> </div>
-<div class="line"><a id="l01496" name="l01496"></a><span class="lineno"> 1496</span>  <span class="keywordflow">if</span> (all_ok &amp;&amp; written_mask != 0) {</div>
-<div class="line"><a id="l01497" name="l01497"></a><span class="lineno"> 1497</span>    <span class="keywordtype">bool</span> hall_ok = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01498" name="l01498"></a><span class="lineno"> 1498</span><span class="preprocessor">#if CONFIG_CHESS_STM32_BL_VERIFY_HALL_AFTER_FLASH &amp;&amp;                          \</span></div>
-<div class="line"><a id="l01499" name="l01499"></a><span class="lineno"> 1499</span><span class="preprocessor">    CONFIG_CHESS_MATRIX_INPUT_I2C_HALL</span></div>
-<div class="line"><a id="l01500" name="l01500"></a><span class="lineno"> 1500</span>    hall_ok = bl_probe_all_nrst_hall_segments(<span class="keyword">true</span>, written_mask);</div>
-<div class="line"><a id="l01501" name="l01501"></a><span class="lineno"> 1501</span>    <span class="keywordflow">if</span> (!hall_ok) {</div>
-<div class="line"><a id="l01502" name="l01502"></a><span class="lineno"> 1502</span>      ESP_LOGE(TAG_A,</div>
-<div class="line"><a id="l01503" name="l01503"></a><span class="lineno"> 1503</span>               <span class="stringliteral">&quot;auto-flash write OK, but Hall doesn&#39;t respond — NVS won&#39;t save, &quot;</span></div>
-<div class="line"><a id="l01504" name="l01504"></a><span class="lineno"> 1504</span>               <span class="stringliteral">&quot;next boot will try flash again (NRST/BOOT0/I2C PB6/PB7)&quot;</span>);</div>
-<div class="line"><a id="l01505" name="l01505"></a><span class="lineno"> 1505</span>    }</div>
-<div class="line"><a id="l01506" name="l01506"></a><span class="lineno"> 1506</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l01507" name="l01507"></a><span class="lineno"> 1507</span>    <span class="keywordflow">if</span> (hall_ok) {</div>
-<div class="line"><a id="l01508" name="l01508"></a><span class="lineno"> 1508</span>      nvs_handle_t hw;</div>
-<div class="line"><a id="l01509" name="l01509"></a><span class="lineno"> 1509</span>      <span class="keywordflow">if</span> (nvs_open(<span class="stringliteral">&quot;stm32_bl&quot;</span>, NVS_READWRITE, &amp;hw) == ESP_OK) {</div>
-<div class="line"><a id="l01510" name="l01510"></a><span class="lineno"> 1510</span>        nvs_set_u32(hw, <span class="stringliteral">&quot;af_crc&quot;</span>, crc);</div>
-<div class="line"><a id="l01511" name="l01511"></a><span class="lineno"> 1511</span>        nvs_set_u32(hw, <span class="stringliteral">&quot;af_len&quot;</span>, (uint32_t)eff);</div>
-<div class="line"><a id="l01512" name="l01512"></a><span class="lineno"> 1512</span>        nvs_set_u32(hw, <span class="stringliteral">&quot;af_mask&quot;</span>, written_mask);</div>
-<div class="line"><a id="l01513" name="l01513"></a><span class="lineno"> 1513</span>        nvs_commit(hw);</div>
-<div class="line"><a id="l01514" name="l01514"></a><span class="lineno"> 1514</span>        nvs_close(hw);</div>
-<div class="line"><a id="l01515" name="l01515"></a><span class="lineno"> 1515</span>        ESP_LOGI(TAG_A,</div>
-<div class="line"><a id="l01516" name="l01516"></a><span class="lineno"> 1516</span>                 <span class="stringliteral">&quot;NVS: stored CRC+length (next boot skips with the same content)&quot;</span>);</div>
-<div class="line"><a id="l01517" name="l01517"></a><span class="lineno"> 1517</span>      }</div>
-<div class="line"><a id="l01518" name="l01518"></a><span class="lineno"> 1518</span>    }</div>
-<div class="line"><a id="l01519" name="l01519"></a><span class="lineno"> 1519</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (any_nrst &amp;&amp; !all_ok) {</div>
-<div class="line"><a id="l01520" name="l01520"></a><span class="lineno"> 1520</span>    ESP_LOGE(TAG_A,</div>
-<div class="line"><a id="l01521" name="l01521"></a><span class="lineno"> 1521</span>             <span class="stringliteral">&quot;auto-flash failed on at least one segment — Hall reading &quot;</span></div>
-<div class="line"><a id="l01522" name="l01522"></a><span class="lineno"> 1522</span>             <span class="stringliteral">&quot;nebude fungovat&quot;</span>);</div>
-<div class="line"><a id="l01523" name="l01523"></a><span class="lineno"> 1523</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (any_nrst &amp;&amp; written_mask == 0) {</div>
-<div class="line"><a id="l01524" name="l01524"></a><span class="lineno"> 1524</span>    ESP_LOGW(TAG_A,</div>
-<div class="line"><a id="l01525" name="l01525"></a><span class="lineno"> 1525</span>             <span class="stringliteral">&quot;ROM bootloader neodpověděl, STM32 jedou dál ze své aplikace&quot;</span>);</div>
-<div class="line"><a id="l01526" name="l01526"></a><span class="lineno"> 1526</span><span class="preprocessor">#if CONFIG_CHESS_STM32_BL_VERIFY_HALL_AFTER_FLASH &amp;&amp;                            \</span></div>
-<div class="line"><a id="l01527" name="l01527"></a><span class="lineno"> 1527</span><span class="preprocessor">    CONFIG_CHESS_MATRIX_INPUT_I2C_HALL</span></div>
-<div class="line"><a id="l01528" name="l01528"></a><span class="lineno"> 1528</span>    <span class="keywordflow">if</span> (!bl_probe_all_nrst_hall_segments(<span class="keyword">true</span>, 0)) {</div>
-<div class="line"><a id="l01529" name="l01529"></a><span class="lineno"> 1529</span>      ESP_LOGE(TAG_A, <span class="stringliteral">&quot;po návratu z bootloaderu Hall neodpovídá&quot;</span>);</div>
-<div class="line"><a id="l01530" name="l01530"></a><span class="lineno"> 1530</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01531" name="l01531"></a><span class="lineno"> 1531</span>      bl_remember_held_image(crc, (uint32_t)eff);</div>
-<div class="line"><a id="l01532" name="l01532"></a><span class="lineno"> 1532</span>    }</div>
-<div class="line"><a id="l01533" name="l01533"></a><span class="lineno"> 1533</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l01534" name="l01534"></a><span class="lineno"> 1534</span>  }</div>
-<div class="line"><a id="l01535" name="l01535"></a><span class="lineno"> 1535</span> </div>
-<div class="line"><a id="l01536" name="l01536"></a><span class="lineno"> 1536</span>out:</div>
-<div class="line"><a id="l01537" name="l01537"></a><span class="lineno"> 1537</span>  stm32_i2c_bl_boot_flash_sync_signal_done();</div>
-<div class="line"><a id="l01538" name="l01538"></a><span class="lineno"> 1538</span> </div>
-<div class="line"><a id="l01539" name="l01539"></a><span class="lineno"> 1539</span><span class="preprocessor">#endif </span><span class="comment">/* AUTO_FLASH_ON_BOOT &amp;&amp; BL */</span><span class="preprocessor"></span></div>
-<div class="line"><a id="l01540" name="l01540"></a><span class="lineno"> 1540</span>}</div>
+<div class="line"><a id="l01466" name="l01466"></a><span class="lineno"> 1466</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l01467" name="l01467"></a><span class="lineno"> 1467</span>    stm32_part_fill_ctx_t fill_ctx = {</div>
+<div class="line"><a id="l01468" name="l01468"></a><span class="lineno"> 1468</span>        .part = part,</div>
+<div class="line"><a id="l01469" name="l01469"></a><span class="lineno"> 1469</span>        .addr7 = addr7,</div>
+<div class="line"><a id="l01470" name="l01470"></a><span class="lineno"> 1470</span>        .addr_off = addr_off,</div>
+<div class="line"><a id="l01471" name="l01471"></a><span class="lineno"> 1471</span>    };</div>
+<div class="line"><a id="l01472" name="l01472"></a><span class="lineno"> 1472</span>    ESP_LOGI(TAG_A,</div>
+<div class="line"><a id="l01473" name="l01473"></a><span class="lineno"> 1473</span>             <span class="stringliteral">&quot;segment %u: uploading %&quot;</span> PRIu32 <span class="stringliteral">&quot; B → STM @0x%08&quot;</span> PRIx32</div>
+<div class="line"><a id="l01474" name="l01474"></a><span class="lineno"> 1474</span>             <span class="stringliteral">&quot; as I2C 0x%02x&quot;</span>,</div>
+<div class="line"><a id="l01475" name="l01475"></a><span class="lineno"> 1475</span>             seg, (uint32_t)eff, base, addr7);</div>
+<div class="line"><a id="l01476" name="l01476"></a><span class="lineno"> 1476</span>    esp_err_t fe = stm32_i2c_bl_flash_binary_impl(</div>
+<div class="line"><a id="l01477" name="l01477"></a><span class="lineno"> 1477</span>        (uint8_t)seg, use_boot, base, eff, stm32_bl_fill_patched, &amp;fill_ctx);</div>
+<div class="line"><a id="l01478" name="l01478"></a><span class="lineno"> 1478</span>    <span class="keywordflow">if</span> (fe == ESP_ERR_NOT_FOUND) {</div>
+<div class="line"><a id="l01479" name="l01479"></a><span class="lineno"> 1479</span>      ESP_LOGW(TAG_A, <span class="stringliteral">&quot;segment %u: ROM bootloader neodpověděl&quot;</span>, seg);</div>
+<div class="line"><a id="l01480" name="l01480"></a><span class="lineno"> 1480</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (fe != ESP_OK) {</div>
+<div class="line"><a id="l01481" name="l01481"></a><span class="lineno"> 1481</span>      ESP_LOGE(TAG_A, <span class="stringliteral">&quot;segment %u: %s&quot;</span>, seg, esp_err_to_name(fe));</div>
+<div class="line"><a id="l01482" name="l01482"></a><span class="lineno"> 1482</span>      all_ok = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l01483" name="l01483"></a><span class="lineno"> 1483</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01484" name="l01484"></a><span class="lineno"> 1484</span>      written_mask |= (1u &lt;&lt; seg);</div>
+<div class="line"><a id="l01485" name="l01485"></a><span class="lineno"> 1485</span>      ESP_LOGI(TAG_A, <span class="stringliteral">&quot;segment %u: hotovo (I2C 0x%02x)&quot;</span>, seg, addr7);</div>
+<div class="line"><a id="l01486" name="l01486"></a><span class="lineno"> 1486</span>    }</div>
+<div class="line"><a id="l01487" name="l01487"></a><span class="lineno"> 1487</span>  }</div>
+<div class="line"><a id="l01488" name="l01488"></a><span class="lineno"> 1488</span> </div>
+<div class="line"><a id="l01489" name="l01489"></a><span class="lineno"> 1489</span>  <span class="keywordflow">if</span> (!any_nrst) {</div>
+<div class="line"><a id="l01490" name="l01490"></a><span class="lineno"> 1490</span>    ESP_LOGW(TAG_A,</div>
+<div class="line"><a id="l01491" name="l01491"></a><span class="lineno"> 1491</span>             <span class="stringliteral">&quot;no NRST GPIO — set CHESS_STM32_BL_NRST_GPIO_SEG* in menuconfig&quot;</span>);</div>
+<div class="line"><a id="l01492" name="l01492"></a><span class="lineno"> 1492</span>  }</div>
+<div class="line"><a id="l01493" name="l01493"></a><span class="lineno"> 1493</span> </div>
+<div class="line"><a id="l01494" name="l01494"></a><span class="lineno"> 1494</span>  <span class="keywordflow">if</span> (all_ok &amp;&amp; written_mask != 0) {</div>
+<div class="line"><a id="l01495" name="l01495"></a><span class="lineno"> 1495</span>    <span class="keywordtype">bool</span> hall_ok = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l01496" name="l01496"></a><span class="lineno"> 1496</span><span class="preprocessor">#if CONFIG_CHESS_STM32_BL_VERIFY_HALL_AFTER_FLASH &amp;&amp;                          \</span></div>
+<div class="line"><a id="l01497" name="l01497"></a><span class="lineno"> 1497</span><span class="preprocessor">    CONFIG_CHESS_MATRIX_INPUT_I2C_HALL</span></div>
+<div class="line"><a id="l01498" name="l01498"></a><span class="lineno"> 1498</span>    hall_ok = bl_probe_all_nrst_hall_segments(<span class="keyword">true</span>, written_mask);</div>
+<div class="line"><a id="l01499" name="l01499"></a><span class="lineno"> 1499</span>    <span class="keywordflow">if</span> (!hall_ok) {</div>
+<div class="line"><a id="l01500" name="l01500"></a><span class="lineno"> 1500</span>      ESP_LOGE(TAG_A,</div>
+<div class="line"><a id="l01501" name="l01501"></a><span class="lineno"> 1501</span>               <span class="stringliteral">&quot;auto-flash write OK, but Hall doesn&#39;t respond — NVS won&#39;t save, &quot;</span></div>
+<div class="line"><a id="l01502" name="l01502"></a><span class="lineno"> 1502</span>               <span class="stringliteral">&quot;next boot will try flash again (NRST/BOOT0/I2C PB6/PB7)&quot;</span>);</div>
+<div class="line"><a id="l01503" name="l01503"></a><span class="lineno"> 1503</span>    }</div>
+<div class="line"><a id="l01504" name="l01504"></a><span class="lineno"> 1504</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l01505" name="l01505"></a><span class="lineno"> 1505</span>    <span class="keywordflow">if</span> (hall_ok) {</div>
+<div class="line"><a id="l01506" name="l01506"></a><span class="lineno"> 1506</span>      nvs_handle_t hw;</div>
+<div class="line"><a id="l01507" name="l01507"></a><span class="lineno"> 1507</span>      <span class="keywordflow">if</span> (nvs_open(<span class="stringliteral">&quot;stm32_bl&quot;</span>, NVS_READWRITE, &amp;hw) == ESP_OK) {</div>
+<div class="line"><a id="l01508" name="l01508"></a><span class="lineno"> 1508</span>        nvs_set_u32(hw, <span class="stringliteral">&quot;af_crc&quot;</span>, crc);</div>
+<div class="line"><a id="l01509" name="l01509"></a><span class="lineno"> 1509</span>        nvs_set_u32(hw, <span class="stringliteral">&quot;af_len&quot;</span>, (uint32_t)eff);</div>
+<div class="line"><a id="l01510" name="l01510"></a><span class="lineno"> 1510</span>        nvs_set_u32(hw, <span class="stringliteral">&quot;af_mask&quot;</span>, written_mask);</div>
+<div class="line"><a id="l01511" name="l01511"></a><span class="lineno"> 1511</span>        nvs_commit(hw);</div>
+<div class="line"><a id="l01512" name="l01512"></a><span class="lineno"> 1512</span>        nvs_close(hw);</div>
+<div class="line"><a id="l01513" name="l01513"></a><span class="lineno"> 1513</span>        ESP_LOGI(TAG_A,</div>
+<div class="line"><a id="l01514" name="l01514"></a><span class="lineno"> 1514</span>                 <span class="stringliteral">&quot;NVS: stored CRC+length (next boot skips with the same content)&quot;</span>);</div>
+<div class="line"><a id="l01515" name="l01515"></a><span class="lineno"> 1515</span>      }</div>
+<div class="line"><a id="l01516" name="l01516"></a><span class="lineno"> 1516</span>    }</div>
+<div class="line"><a id="l01517" name="l01517"></a><span class="lineno"> 1517</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (any_nrst &amp;&amp; !all_ok) {</div>
+<div class="line"><a id="l01518" name="l01518"></a><span class="lineno"> 1518</span>    ESP_LOGE(TAG_A,</div>
+<div class="line"><a id="l01519" name="l01519"></a><span class="lineno"> 1519</span>             <span class="stringliteral">&quot;auto-flash failed on at least one segment — Hall reading &quot;</span></div>
+<div class="line"><a id="l01520" name="l01520"></a><span class="lineno"> 1520</span>             <span class="stringliteral">&quot;nebude fungovat&quot;</span>);</div>
+<div class="line"><a id="l01521" name="l01521"></a><span class="lineno"> 1521</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (any_nrst &amp;&amp; written_mask == 0) {</div>
+<div class="line"><a id="l01522" name="l01522"></a><span class="lineno"> 1522</span>    ESP_LOGW(TAG_A,</div>
+<div class="line"><a id="l01523" name="l01523"></a><span class="lineno"> 1523</span>             <span class="stringliteral">&quot;ROM bootloader neodpověděl, STM32 jedou dál ze své aplikace&quot;</span>);</div>
+<div class="line"><a id="l01524" name="l01524"></a><span class="lineno"> 1524</span><span class="preprocessor">#if CONFIG_CHESS_STM32_BL_VERIFY_HALL_AFTER_FLASH &amp;&amp;                            \</span></div>
+<div class="line"><a id="l01525" name="l01525"></a><span class="lineno"> 1525</span><span class="preprocessor">    CONFIG_CHESS_MATRIX_INPUT_I2C_HALL</span></div>
+<div class="line"><a id="l01526" name="l01526"></a><span class="lineno"> 1526</span>    <span class="keywordflow">if</span> (!bl_probe_all_nrst_hall_segments(<span class="keyword">true</span>, 0)) {</div>
+<div class="line"><a id="l01527" name="l01527"></a><span class="lineno"> 1527</span>      ESP_LOGE(TAG_A, <span class="stringliteral">&quot;po návratu z bootloaderu Hall neodpovídá&quot;</span>);</div>
+<div class="line"><a id="l01528" name="l01528"></a><span class="lineno"> 1528</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01529" name="l01529"></a><span class="lineno"> 1529</span>      bl_remember_held_image(crc, (uint32_t)eff);</div>
+<div class="line"><a id="l01530" name="l01530"></a><span class="lineno"> 1530</span>    }</div>
+<div class="line"><a id="l01531" name="l01531"></a><span class="lineno"> 1531</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l01532" name="l01532"></a><span class="lineno"> 1532</span>  }</div>
+<div class="line"><a id="l01533" name="l01533"></a><span class="lineno"> 1533</span> </div>
+<div class="line"><a id="l01534" name="l01534"></a><span class="lineno"> 1534</span>out:</div>
+<div class="line"><a id="l01535" name="l01535"></a><span class="lineno"> 1535</span>  stm32_i2c_bl_boot_flash_sync_signal_done();</div>
+<div class="line"><a id="l01536" name="l01536"></a><span class="lineno"> 1536</span> </div>
+<div class="line"><a id="l01537" name="l01537"></a><span class="lineno"> 1537</span><span class="preprocessor">#endif </span><span class="comment">/* AUTO_FLASH_ON_BOOT &amp;&amp; BL */</span><span class="preprocessor"></span></div>
+<div class="line"><a id="l01538" name="l01538"></a><span class="lineno"> 1538</span>}</div>
 </div>
 <div class="ttc" id="aha__light__task_8c_html_a1673907d4d89d763bb7b94ec1eeb7b60"><div class="ttname"><a href="ha__light__task_8c.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a></div><div class="ttdeci">uint8_t g</div><div class="ttdef"><b>Definition</b> <a href="ha__light__task_8c_source.html#l00152">ha_light_task.c:152</a></div></div>
 <div class="ttc" id="aha__light__task_8c_html_a4313c9563516f94387762ab05763456b"><div class="ttname"><a href="ha__light__task_8c.html#a4313c9563516f94387762ab05763456b">b</a></div><div class="ttdeci">uint8_t b</div><div class="ttdef"><b>Definition</b> <a href="ha__light__task_8c_source.html#l00152">ha_light_task.c:152</a></div></div>

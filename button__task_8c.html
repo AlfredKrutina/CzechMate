@@ -267,27 +267,10 @@ Variables</h2></td></tr>
 autotoc_md0</h1>
 <h1 class="doxsection"><a class="anchor" id="autotoc_md1"></a>
 WHAT DID THIS FILE DO?</h1>
-<p>This task processes ALL buttons:</p><ol type="1">
-<li>4 physical promotion buttons (Queen, Rook, Bishop, Knight)</li>
-<li>1 physical reset button</li>
-<li>4 virtual promotion buttons (only LED indication)</li>
-<li>Debouncing (ignores "shaking")</li>
-<li>Event detection (press, release, long press, double press)</li>
-<li>Sending the event to the queue</li>
-</ol>
-<hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
-HOW DOES IT WORK?</h1>
-<p>HARDWARE:</p><ul>
-<li>4 promotion buttons: GPIO shared with matrix cols (time-multiplexed)</li>
-<li>1 reset button: GPIO15 (dedicated pin)</li>
-<li>9 LED indication: LED indexes 64-72 (WS2812B)</li>
-</ul>
+<p>The V2 board has one gesture button. <a class="el" href="button__gesture_8c.html#a54208b726455b1c501e05d24c4591739">button_gesture_poll()</a> decodes it. Promotion and reset switches from the reed matrix are archived. This task still drains button_event_queue (simulation and UART) and polls the gesture button every 5 ms.</p>
 <p>MAIN LOOP (5ms cycle): while (1) {</p><ol type="1">
-<li>Scan all GPIO buttons</li>
-<li>Debounce (50ms stability required)</li>
-<li>Detect events (press/release/long/double)</li>
-<li>Send events to button_event_queue</li>
+<li>Drain button commands</li>
+<li><a class="el" href="button__gesture_8c.html#a54208b726455b1c501e05d24c4591739">button_gesture_poll()</a> for the single V2 switch</li>
 <li>Wait 5ms }</li>
 </ol>
 <p>DEBOUNCING:</p><ul>
@@ -302,14 +285,14 @@ HOW DOES IT WORK?</h1>
 <li>DOUBLE_PRESS: 2x press within 300ms</li>
 </ul>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
 COMMUNICATION (FIFOS)</h1>
 <p>QUEUES - We send button events:</p><ul>
 <li>button_event_queue -&gt; Events for game_task (promotion choice, reset)</li>
 </ul>
 <p>BACK MUTEXY - Task only scans GPIO and sends events</p>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md7"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
 CRITIC OF RULES</h1>
 <dl class="section warning"><dt>Warning</dt><dd>WHAT NOT TO DO:</dd></dl>
 <ol type="1">
@@ -318,7 +301,7 @@ CRITIC OF RULES</h1>
 <li>ALWAYS check queue overflow! If the queue is full, the events will be lost</li>
 </ol>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md9"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md7"></a>
 TABLE OF CONTENTS</h1>
 <p>Section 1: Button Scanning ..................... line 136 Section 2: Event Processing ..................... line 260 Section 3: LED Feedback ........................ line 391 Section 4: Main Button Task ..................... line 509</p>
 <hr  />
@@ -351,7 +334,7 @@ TABLE OF CONTENTS</h1>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00126">126</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00112">112</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -367,7 +350,7 @@ TABLE OF CONTENTS</h1>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00128">128</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00114">114</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -383,7 +366,7 @@ TABLE OF CONTENTS</h1>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00127">127</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00113">113</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -412,7 +395,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00403">403</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00337">337</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -439,7 +422,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00357">357</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00291">291</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -466,7 +449,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00374">374</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00308">308</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -488,7 +471,7 @@ TABLE OF CONTENTS</h1>
 <p>List the status of the buttons. </p>
 <p>Lists the status of all 9 buttons and information about the simulation mode. </p>
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00529">529</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00463">463</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -510,7 +493,7 @@ TABLE OF CONTENTS</h1>
 <p>Process button commands from the queue. </p>
 <p>Reads commands from button_command_queue and executes them (reset, status, test). </p>
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00484">484</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00418">418</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -532,7 +515,7 @@ TABLE OF CONTENTS</h1>
 <p>Handle button events and state changes. </p>
 <p>Detects button state changes and generates events (press, release, long press, double press). </p>
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00329">329</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00263">263</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -554,7 +537,7 @@ TABLE OF CONTENTS</h1>
 <p>Reset all button states. </p>
 <p>Clears all internal button states and resets the simulation mode. </p>
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00511">511</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00445">445</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -576,7 +559,7 @@ TABLE OF CONTENTS</h1>
 <p>Scans all state change buttons. </p>
 <p>Reading the state of all 9 buttons and updating the internal state. In the simulation mode, it simulates the successive pressing of the buttons. </p>
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00190">190</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00176">176</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -614,7 +597,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00430">430</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00364">364</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -658,7 +641,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00472">472</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00406">406</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -685,7 +668,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00277">277</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00211">211</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -712,7 +695,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00295">295</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00229">229</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -740,7 +723,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00564">564</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00498">498</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -762,7 +745,7 @@ TABLE OF CONTENTS</h1>
 <p>Test all buttons. </p>
 <p>It successively simulates pressing and releasing all 9 buttons for functionality testing. </p>
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00542">542</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00476">476</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -795,7 +778,7 @@ TABLE OF CONTENTS</h1>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00458">458</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00392">392</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -822,7 +805,7 @@ TABLE OF CONTENTS</h1>
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
 <div class="line">    <span class="keyword">false</span>}</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00140">140</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00126">126</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -857,7 +840,7 @@ TABLE OF CONTENTS</h1>
 <div class="line">    <span class="stringliteral">&quot;Reset&quot;</span>                   </div>
 <div class="line">}</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00149">149</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00135">135</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -883,7 +866,7 @@ TABLE OF CONTENTS</h1>
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
 <div class="line">    0}</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00138">138</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00124">124</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -909,7 +892,7 @@ TABLE OF CONTENTS</h1>
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
 <div class="line">    0}</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00135">135</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00121">121</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -935,7 +918,7 @@ TABLE OF CONTENTS</h1>
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
 <div class="line">    <span class="keyword">false</span>}</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00133">133</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00119">119</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -959,7 +942,7 @@ TABLE OF CONTENTS</h1>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00137">137</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00123">123</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -983,7 +966,7 @@ TABLE OF CONTENTS</h1>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00184">184</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00170">170</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -1009,7 +992,7 @@ TABLE OF CONTENTS</h1>
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
 <div class="line">    <span class="keyword">false</span>}</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00131">131</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00117">117</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -1033,7 +1016,7 @@ TABLE OF CONTENTS</h1>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00183">183</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00169">169</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -1057,7 +1040,7 @@ TABLE OF CONTENTS</h1>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00182">182</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00168">168</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -1081,7 +1064,7 @@ TABLE OF CONTENTS</h1>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00145">145</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00131">131</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -1105,7 +1088,7 @@ TABLE OF CONTENTS</h1>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00119">119</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00105">105</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>
@@ -1129,7 +1112,7 @@ TABLE OF CONTENTS</h1>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00144">144</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="button__task_8c_source.html#l00130">130</a> of file <a class="el" href="button__task_8c_source.html">button_task.c</a>.</p>
 
 </div>
 </div>

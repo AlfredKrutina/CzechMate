@@ -1,5 +1,10 @@
 var NAVTREEINDEX18 =
 {
+"structgame__cmd__hint__fields__t.html#a9fdebcfeeeacbf5c6ff3bde020f970a5":[7,0,24,0],
+"structgame__cmd__hint__fields__t.html#aadead84c76d768b8aabb5b4126905477":[7,0,24,2],
+"structgame__cmd__hint__fields__t.html#ac8ea437d25b5e34803dd8decd09b9089":[7,0,24,1],
+"structgame__cmd__lift__fields__t.html":[7,0,25],
+"structgame__cmd__lift__fields__t.html#ab365cddfe1f8a23108bedae4e49b6c33":[7,0,25,0],
 "structgame__cmd__mode__fields__t.html":[7,0,26],
 "structgame__cmd__mode__fields__t.html#a41da76156a8f4edfc70ccd1ba0bc7934":[7,0,26,1],
 "structgame__cmd__mode__fields__t.html#ae5b62bfcd5583ebd27d61dba43e4fada":[7,0,26,0],
@@ -244,10 +249,5 @@ var NAVTREEINDEX18 =
 "structgame__snapshot__v2__t.html#a34a554a5c2953abf6e278f5dbea7052e":[7,0,49,31],
 "structgame__snapshot__v2__t.html#a395d1c9019c24674a061b43e16dc6e71":[7,0,49,23],
 "structgame__snapshot__v2__t.html#a3a343c1d8eddc5522e5a66727605286f":[7,0,49,4],
-"structgame__snapshot__v2__t.html#a4e889be03bb23d60f530d8df14f5f775":[7,0,49,9],
-"structgame__snapshot__v2__t.html#a4f2571217b1d8874bc97821e01def0ea":[7,0,49,35],
-"structgame__snapshot__v2__t.html#a4fa3ed7bfb52ab8a0118073a9239631e":[7,0,49,3],
-"structgame__snapshot__v2__t.html#a53276b0fbc5d34ea98b9d436cb223870":[7,0,49,37],
-"structgame__snapshot__v2__t.html#a5cb8efc248e790a553f0f48a4f0bf632":[7,0,49,33],
-"structgame__snapshot__v2__t.html#a5fd0c8f2b2c42c3926947047afbf07e6":[7,0,49,15]
+"structgame__snapshot__v2__t.html#a4e889be03bb23d60f530d8df14f5f775":[7,0,49,9]
 };

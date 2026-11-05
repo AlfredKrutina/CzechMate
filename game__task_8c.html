@@ -521,9 +521,9 @@ Variables</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Game Task - chess logic and game-state management. </p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md11"></a>
-autotoc_md11</h1>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md12"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md9"></a>
+autotoc_md9</h1>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md10"></a>
 WHAT THIS FILE DOES</h1>
 <p>This task is the "brain" of the chessboard. It manages all game logic:</p><ol type="1">
 <li>Chess rules (standard FIDE rules)</li>
@@ -536,7 +536,7 @@ WHAT THIS FILE DOES</h1>
 <li>Communication with the physical board (squares_task)</li>
 </ol>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md14"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md12"></a>
 HOW IT WORKS</h1>
 <p>STARTUP:</p><ul>
 <li>Initialize chessboard (starting position)</li>
@@ -560,7 +560,7 @@ HOW IT WORKS</h1>
 <li>Check end of game (mate/stalemate)</li>
 </ol>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md16"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md14"></a>
 COMMUNICATION (FIFOS &amp; MUTEXES)</h1>
 <p>QUEUES - Receiving commands:</p><ul>
 <li>game_command_queue -&gt; Commands from <a class="el" href="game__dispatch_8c.html#aad72af0371b11489c0dd92fdd2128e3b" title="Process game commands from the queue.">game_submit()</a> (web, BLE, squares, main)</li>
@@ -578,7 +578,7 @@ COMMUNICATION (FIFOS &amp; MUTEXES)</h1>
 <div class="line">xSemaphoreGive(<a class="code hl_variable" href="freertos__chess_8c.html#af5298ceb88597b4b25328ac7e1af7ff0">game_mutex</a>);                  <span class="comment">// Unlock</span></div>
 <div class="ttc" id="afreertos__chess_8c_html_af5298ceb88597b4b25328ac7e1af7ff0"><div class="ttname"><a href="freertos__chess_8c.html#af5298ceb88597b4b25328ac7e1af7ff0">game_mutex</a></div><div class="ttdeci">SemaphoreHandle_t game_mutex</div><div class="ttdoc">Mutex for game operations (protect game state).</div><div class="ttdef"><b>Definition</b> <a href="freertos__chess_8c_source.html#l00121">freertos_chess.c:121</a></div></div>
 </div><!-- fragment --><hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md18"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md16"></a>
 CHESS RULES IMPLEMENTED</h1>
 <p>BASIC MOVES:</p><ul>
 <li>Pawn: 1 or 2 squares forward from start rank, captures diagonally</li>
@@ -601,12 +601,12 @@ CHESS RULES IMPLEMENTED</h1>
 <li>Insufficient material - not enough material to mate</li>
 </ul>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md20"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md18"></a>
 TABLE OF CONTENTS</h1>
 <p>Section 1: Global Variables &amp; State ............... line 100 Section 2: Board Initialization .................... line 1070 Section 3: Move Validation ......................... line 2000 Section 4: Special Moves (Castle, En Passant) ...... line 3500 Section 5: Move Execution .......................... line 4500 Section 6: Endgame Detection ...................... line 5500 Section 7: Command Processing ...................... line 6500 Section 8: Main Game Task Loop ..................... line 7964 Section 9: JSON API Functions ...................... line 11477</p>
 <p>TIP: Ctrl+G to jump to a line</p>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md22"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md20"></a>
 DEPENDENCIES</h1>
 <ul>
 <li>squares_task: Receive UP/DN event from physical board</li>
@@ -617,7 +617,7 @@ DEPENDENCIES</h1>
 <li>unified_animation_manager: Move animation</li>
 </ul>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md24"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md22"></a>
 CRITICAL RULES</h1>
 <dl class="section warning"><dt>Warning</dt><dd>DO NOT:</dd></dl>
 <ol type="1">

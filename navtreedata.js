@@ -25,15 +25,15 @@
 var NAVTREE =
 [
   [ "CZECHMATE", "index.html", [
-    [ "About", "index.html#autotoc_md93", null ],
-    [ "Features", "index.html#autotoc_md95", null ],
-    [ "Hardware", "index.html#autotoc_md97", [
-      [ "V1 Prototype Overview", "index.html#autotoc_md98", null ]
+    [ "About", "index.html#autotoc_md91", null ],
+    [ "Features", "index.html#autotoc_md93", null ],
+    [ "Hardware", "index.html#autotoc_md95", [
+      [ "V1 pin map (archived, not initialized)", "index.html#autotoc_md96", null ]
     ] ],
-    [ "Architecture", "index.html#autotoc_md100", null ],
-    [ "Build &amp; flash", "index.html#autotoc_md102", null ],
-    [ "Usage", "index.html#autotoc_md104", null ],
-    [ "Documentation", "index.html#autotoc_md106", null ],
+    [ "Architecture", "index.html#autotoc_md98", null ],
+    [ "Build &amp; flash", "index.html#autotoc_md100", null ],
+    [ "Usage", "index.html#autotoc_md102", null ],
+    [ "Documentation", "index.html#autotoc_md104", null ],
     [ "Data Structures", "annotated.html", [
       [ "Data Structures", "annotated.html", "annotated_dup" ],
       [ "Data Structure Index", "classes.html", null ],
@@ -62,28 +62,28 @@ var NAVTREEINDEX =
 "annotated.html",
 "chess__types_8h.html#a4b9c35d83af38787d5601d9c2443a66da6f598eb95d085991a9c7210c7d9f4fbe",
 "dir_409f97388efe006bc3438b95e9edef48.html",
-"freertos__chess_8h.html#afe966dccff7e1c439146a85369c623f7",
-"game__castling_8c.html#a6974209fc82de9bbb764a014d9badec0",
-"game__events_8c.html#afa63b70b9c1cf6435bc22a55554eb709",
-"game__led__animations_8h.html#a30603ef39ed3a32a5ae1be1274874159a2817775da3ceef1a44819ed7264c0b99",
-"game__opening__trainer_8c.html#add2affa1f220901931edd0d4664449cea4f92f3e9db7f875ed8892a20822642f9",
-"game__puzzle_8c.html#ac23ab4051c71c9280a8fa551891d8b82",
-"game__task_8c.html#a63d2e02edade145bca62b50881d82a16",
-"game__task_8h.html#a917f1907b236e1476e75bb033e2a3165",
-"globals_l.html",
-"hall__i2c__squares_8c.html#aa3278a7bff324a927ff9c6d198f47d8b",
-"led__gesture__anim_8h.html#a7ef738df14880121fc3359bba9da4961ad33472c5e313c34ea6e87cd54edbe1e5",
-"led__task_8c.html#a60700301927298625a435c793041005e",
-"led__unified__api_8h.html#a323c87898912a4a4d62383dbe8bd7099",
-"position_8c_source.html",
-"streaming__output_8c.html#aca427711530c81651095df3f70106d66",
-"structgame__cmd__mode__fields__t.html",
-"structgame__snapshot__v2__t.html#a60698787022d652fb960b59e7a0539eb",
-"structopening__trainer__state__t.html#ade556667b1646ca99afa1e7930f7af0b",
-"test__task_8c.html#aefcd5d044060161ae93bb8278e88e66a",
-"uart__task_8c.html#a69b6577bff99c21d8c4ac0f3b9bf42be",
-"unified__animation__manager_8h.html#acaa0b94777258411e3878a2e39e54ff4",
-"web__server__task_8c.html#a46d1719629fd536b25bd288a334d338c"
+"functions_c.html",
+"game__castling_8c.html#af26d73c4a9e269473827e4d4497b21b3",
+"game__events_8h.html#a0a1ff8ec3d1de014922977e1f9a9a369",
+"game__led__animations_8h.html#a657e1bb5d40ff05278f1fd817295a34b",
+"game__opening__trainer_8c.html#ae93334dd3666e28c65325bfda7942712",
+"game__puzzle_8c.html#acf826ca4ea1225da1fd85055b68b64fd",
+"game__task_8c.html#a6e5f0e6f61004c63b6da0114e626c68b",
+"game__task_8h.html#a95ff59f2de485d9219690ece40566f80",
+"globals_t.html",
+"hall__i2c__squares_8h.html#a50ebc214fb7ce42f9550c192eb23e6f9",
+"led__gesture__anim_8h.html#a7ef738df14880121fc3359bba9da4961",
+"led__task_8c.html#a5b29e2f7276c89b3c3dd9d870dbc0245",
+"led__unified__api_8h.html",
+"position_8c.html#ab37506945d3846f8f7faa74b49194184",
+"streaming__output_8c.html#aa8255bd6562ac594bf8c271b0af18629",
+"structgame__cmd__hint__fields__t.html#a9fdebcfeeeacbf5c6ff3bde020f970a5",
+"structgame__snapshot__v2__t.html#a4f2571217b1d8874bc97821e01def0ea",
+"structmove__undo__meta__t.html#a961df11f8d1c634992598b34282c44c0",
+"test__task_8c.html#a7197f18ba1c3fef844e8d56fc3d132d4",
+"uart__task_8c.html#a35141cb45623cb3b7b4d96da35ed1831",
+"unified__animation__manager_8h.html#a7e703c09ba390bb0306ced9d307690dfa01a8550d7489dc34d42bf1668684ad8c",
+"web__server__task_8c.html#a0e726733246359d1abdcf0ac63e887a0"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

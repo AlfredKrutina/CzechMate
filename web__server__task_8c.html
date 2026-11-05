@@ -556,7 +556,7 @@ Variables</h2></td></tr>
 <div class="textblock"><p>HTTP server (port 80), Wi‑Fi STA/AP according to NVS, REST API and WebSocket for mobile application. </p>
 <p>Browser UI not on root path — GET <span class="tt">/</span> returns indicative JSON; full service is in the app. Hotspot of the board (AP) is disabled by default; enable via BLE (<span class="tt">wifi_ap_set</span>) or NVS <span class="tt">ap_user_en</span>.</p>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md79"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md77"></a>
 WHAT DID THIS FILE DO?</h1>
 <ol type="1">
 <li>Wi‑Fi — STA according to NVS; AP only when the user turns it on (BLE / NVS).</li>
@@ -565,11 +565,11 @@ WHAT DID THIS FILE DO?</h1>
 <li>The <span class="tt"><a class="el" href="#a4ed770cbe46604586e494bae84b62304" title="Queue for game commands (new game, move, status).">game_command_queue</a></span> queue — commands from HTTP (move, reset, ...).</li>
 </ol>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md81"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md79"></a>
 REST (orientation statement)</h1>
 <p>GET /api/status, /api/board, POST /api/move, POST /api/reset, GET /api/timer, POST /api/demo/config and more — see implemented handlers in this file.</p>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md83"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md81"></a>
 COMMUNICATION (QUEUES)</h1>
 <p>QUEUES - We send orders:</p><ul>
 <li>game_command_queue -&gt; Commands from the web (move, reset)</li>
@@ -580,7 +580,7 @@ COMMUNICATION (QUEUES)</h1>
 <li><a class="el" href="game__json__export_8c.html#a5d08ec12c99532e3819abb072385a921" title="Export the pull history to a JSON string.">game_get_history_json()</a> -&gt; Get JSON history</li>
 </ul>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md85"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md83"></a>
 REST API ENDPOINTS</h1>
 <p>GET /api/status:</p><ul>
 <li>JSON: {game_state, current_player, move_count, in_check, game_end, error_state}</li>
@@ -599,7 +599,7 @@ REST API ENDPOINTS</h1>
 <li>Points: {enabled: true, speed_ms: 2000}</li>
 </ul>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md87"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md85"></a>
 CRITIC OF RULES</h1>
 <dl class="section warning"><dt>Warning</dt><dd>WHAT NOT TO DO:</dd></dl>
 <ol type="1">
@@ -609,7 +609,7 @@ CRITIC OF RULES</h1>
 <li>ALWAYS use a mutex to access the game state! API functions like <a class="el" href="game__json__export_8c.html#abdf3ba446d87db43c26b6c51275a521e" title="Export game state to JSON string.">game_get_status_json()</a> already do that</li>
 </ol>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md89"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md87"></a>
 TABLE OF CONTENTS</h1>
 <p>Section 1: WiFi Setup .......................... line 100 Section 2: HTTP Handlers ........................ line 300 Section 3: REST API Functions ................... line 800 Section 4: HTTP handlers and REST .................. (see file structure) Section 5: Main Web Server Task .................. (see file structure)</p>
 <hr  />

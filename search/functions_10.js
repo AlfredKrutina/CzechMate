@@ -13,8 +13,7 @@ var searchData=
   ['resignation_5fstart_10',['resignation_start',['../game__resignation_8c.html#acbf110fdfd6d83d9db30abcfdfffd8e0',1,'resignation_start(player_t player, uint8_t row, uint8_t col):&#160;game_resignation.c'],['../game__task_8h.html#acbf110fdfd6d83d9db30abcfdfffd8e0',1,'resignation_start(player_t player, uint8_t row, uint8_t col):&#160;game_resignation.c']]],
   ['resignation_5fstop_11',['resignation_stop',['../game__resignation_8c.html#a46ffa46dd43290f359f785472f45d175',1,'resignation_stop(bool finalize):&#160;game_resignation.c'],['../game__task_8h.html#a46ffa46dd43290f359f785472f45d175',1,'resignation_stop(bool finalize):&#160;game_resignation.c']]],
   ['resignation_5ftick_12',['resignation_tick',['../game__resignation_8c.html#a794e20c20949f63ca0954ebaaea90891',1,'resignation_tick(void):&#160;game_resignation.c'],['../game__task_8h.html#a794e20c20949f63ca0954ebaaea90891',1,'resignation_tick(void):&#160;game_resignation.c']]],
-  ['resignation_5fupdate_5fbutton_5fleds_13',['resignation_update_button_leds',['../game__resignation_8c.html#a6b536ba6f8bb5ebf7a76124fbb8d9b10',1,'game_resignation.c']]],
-  ['restart_5fcb_14',['restart_cb',['../ota__guard_8c.html#afb4d90fc1e2d1b9110ffa2e95af1ebc9',1,'ota_guard.c']]],
-  ['restore_5fboard_15',['restore_board',['../led__gesture__anim_8c.html#a552f43e8395cfb153dc389aee8cf8cb8',1,'led_gesture_anim.c']]],
-  ['rook_5fanimation_5ftimer_5fcallback_16',['rook_animation_timer_callback',['../game__castling_8c.html#af26d73c4a9e269473827e4d4497b21b3',1,'rook_animation_timer_callback(TimerHandle_t xTimer):&#160;game_castling.c'],['../game__task_8h.html#af26d73c4a9e269473827e4d4497b21b3',1,'rook_animation_timer_callback(TimerHandle_t xTimer):&#160;game_castling.c']]]
+  ['restart_5fcb_13',['restart_cb',['../ota__guard_8c.html#afb4d90fc1e2d1b9110ffa2e95af1ebc9',1,'ota_guard.c']]],
+  ['restore_5fboard_14',['restore_board',['../led__gesture__anim_8c.html#a552f43e8395cfb153dc389aee8cf8cb8',1,'led_gesture_anim.c']]],
+  ['rook_5fanimation_5ftimer_5fcallback_15',['rook_animation_timer_callback',['../game__castling_8c.html#af26d73c4a9e269473827e4d4497b21b3',1,'rook_animation_timer_callback(TimerHandle_t xTimer):&#160;game_castling.c'],['../game__task_8h.html#af26d73c4a9e269473827e4d4497b21b3',1,'rook_animation_timer_callback(TimerHandle_t xTimer):&#160;game_castling.c']]]
 ];

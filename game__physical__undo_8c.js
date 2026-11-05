@@ -25,7 +25,6 @@ var game__physical__undo_8c =
     [ "game_physical_undo_rook_for_king", "game__physical__undo_8c.html#a27a1968b545b41775ce5610d59a4c9d1", null ],
     [ "game_physical_undo_show_armed_leds", "game__physical__undo_8c.html#a0e69f943af86cc620793802ad0bc9708", null ],
     [ "game_physical_undo_show_pending_leds", "game__physical__undo_8c.html#ae8cbf6b4060dcb8597b8741add61a8c4", null ],
-    [ "game_physical_undo_target_matches_reed", "game__physical__undo_8c.html#a139cc05587438735be74586b69c24350", null ],
     [ "game_physical_undo_tick", "game__physical__undo_8c.html#a37f097ae937dba1d78770d62b0ecf5e7", null ],
     [ "game_physical_undo_try_complete_engine", "game__physical__undo_8c.html#a367d64dec45fc07edbbf15c66d80f352", null ],
     [ "game_undo_rewind_last_move", "game__physical__undo_8c.html#a56f1df9f1b25d301842d42aabeb54aed", null ],

@@ -625,9 +625,9 @@ Variables</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>LED Task - WS2812B LED control and animation. </p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md29"></a>
-autotoc_md29</h1>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md30"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md27"></a>
+autotoc_md27</h1>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md28"></a>
 WHAT DID THIS FILE DO?</h1>
 <p>This task controls ALL LEDs in the system:</p><ol type="1">
 <li>64 LEDs for the box (8x8 grid)</li>
@@ -638,7 +638,7 @@ WHAT DID THIS FILE DO?</h1>
 <li>Batch update system for optimal performance</li>
 </ol>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md32"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md30"></a>
 HOW DOES IT WORK?</h1>
 <p>HARDWARE:</p><ul>
 <li>WS2812B LED strip on GPIO7</li>
@@ -666,7 +666,7 @@ HOW DOES IT WORK?</h1>
 <li>WHY? -&gt; WS2812B requires timing-critical refresh</li>
 </ul>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md34"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md32"></a>
 COMMUNICATION (FIFOS &amp; MUTEXY)</h1>
 <p>DIRECT CALLS (NO QUEUE):</p><ul>
 <li><a class="el" href="#a7cb7bb0774dead39c3607d19de9f9d34" title="Set LED pixel (internal functions without mutex).">led_set_pixel_internal()</a> -&gt; Set 1 LED</li>
@@ -687,7 +687,7 @@ COMMUNICATION (FIFOS &amp; MUTEXY)</h1>
 <div class="ttc" id="aled__task_8c_html_ac1c48ef4ad2c752b3812d8e4e3e5324c"><div class="ttname"><a href="#ac1c48ef4ad2c752b3812d8e4e3e5324c">led_changed_flags</a></div><div class="ttdeci">static bool led_changed_flags[(64+9)]</div><div class="ttdef"><b>Definition</b> <a href="led__task_8c_source.html#l00393">led_task.c:393</a></div></div>
 <div class="ttc" id="aled__task_8c_html_acd37c9dc96b5ed1245631969b5daa3f2"><div class="ttname"><a href="#acd37c9dc96b5ed1245631969b5daa3f2">LED_TASK_MUTEX_TIMEOUT_TICKS</a></div><div class="ttdeci">#define LED_TASK_MUTEX_TIMEOUT_TICKS</div><div class="ttdef"><b>Definition</b> <a href="led__task_8c_source.html#l00245">led_task.c:245</a></div></div>
 </div><!-- fragment --><hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md36"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md34"></a>
 LED ANIMATION</h1>
 <p>BASE ANIMATION:</p><ul>
 <li>Player change - Color the edges of the box according to the game</li>
@@ -707,7 +707,7 @@ LED ANIMATION</h1>
 <li>Automatically stops after X seconds</li>
 </ul>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md38"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md36"></a>
 BUTTON LED LOGIC</h1>
 <p>BUTTON LED STATUS:</p><ul>
 <li>GREEN: Button available (can be used)</li>
@@ -722,12 +722,12 @@ BUTTON LED LOGIC</h1>
 <li>Player release -&gt; FLASH 2s -&gt; BLUE</li>
 </ol>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md40"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md38"></a>
 TABLE OF CONTENTS (NAVIGATION)</h1>
 <p>Section 1: Hardware Init &amp; WDT ..................... line 70 Section 2: Global Variables ........................ radek 183 Sekce 3: LED Control Functions ................... radek 292 Sekce 4: Batch Update System ..................... radek 600 Sekce 5: Button LED Logic ........................ radek 1200 Sekce 6: Animation Functions ..................... radek 1500 Sekce 7: Main LED Task Loop ...................... radek 2800</p>
 <p>TIP: Ctrl+G pro skok na radek</p>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md42"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md40"></a>
 DEPENDENCIES</h1>
 <ul>
 <li>ESP-IDF led_strip driver: WS2812B control</li>
@@ -736,7 +736,7 @@ DEPENDENCIES</h1>
 <li>unified_animation_manager: Koordinace animaci</li>
 </ul>
 <hr  />
- <h1 class="doxsection"><a class="anchor" id="autotoc_md44"></a>
+ <h1 class="doxsection"><a class="anchor" id="autotoc_md42"></a>
 CRITICAL RULES</h1>
 <dl class="section warning"><dt>Warning</dt><dd>DO NOT:</dd></dl>
 <ol type="1">

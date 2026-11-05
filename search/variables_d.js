@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['occupied_0',['occupied',['../structhall__square__reading__t.html#ae2ad35c6cf1bf4f20c99b5f6b98272ca',1,'hall_square_reading_t']]],
+  ['occupied_0',['occupied',['../structhall__presence__state__t.html#a67f244f1b99bf43e51cf675f68693765',1,'hall_presence_state_t::occupied'],['../structhall__square__reading__t.html#ae2ad35c6cf1bf4f20c99b5f6b98272ca',1,'hall_square_reading_t::occupied']]],
   ['on_5fcomplete_1',['on_complete',['../structanimation__state__struct.html#a1257c5b14f68eec69cc6a480895748d0',1,'animation_state_struct']]],
   ['on_5fdrop_2',['on_drop',['../structgame__mode.html#a35d5a966568893e5bb732248d75bf117',1,'game_mode']]],
   ['on_5fframe_3',['on_frame',['../structanimation__state__struct.html#a5596162671dcc10a67f1eeeb102da26a',1,'animation_state_struct']]],

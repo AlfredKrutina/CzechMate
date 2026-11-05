@@ -19,7 +19,7 @@ var searchData=
   ['endgame_5freason_16',['endgame_reason',['../structgame__snapshot__v2__t.html#aee126371d814b7047a2f6bf19294f52c',1,'game_snapshot_v2_t']]],
   ['endgame_5fwave_17',['endgame_wave',['../led__task_8c.html#a1ed1a514affa226ab201a5e7334e32a7',1,'led_task.c']]],
   ['enemy_5fred_5fpalette_18',['enemy_red_palette',['../game__led__animations_8c.html#a06640a5d84f366f00c51139f93704f21',1,'game_led_animations.c']]],
-  ['energy_19',['energy',['../structhall__square__reading__t.html#ac09d8920b9a98245935d5ef802e71b94',1,'hall_square_reading_t']]],
+  ['energy_19',['energy',['../structhall__presence__inputs__t.html#ad385b96e5c7194b2e4926b1bcb3b00fa',1,'hall_presence_inputs_t::energy'],['../structhall__square__reading__t.html#ac09d8920b9a98245935d5ef802e71b94',1,'hall_square_reading_t::energy']]],
   ['ep_20',['ep',['../structgame__fen__position__t.html#ab84672252858412fb8b4d775cd1e8006',1,'game_fen_position_t']]],
   ['ep_5fbefore_21',['ep_before',['../structposition__hist__t.html#a4a23e7616ffd1e526ddeb27bc9f9d66a',1,'position_hist_t']]],
   ['ep_5fcol_22',['ep_col',['../structgame__fen__position__t.html#a7dd2acd3ace1dac1a4d1b6dece16f38a',1,'game_fen_position_t']]],
