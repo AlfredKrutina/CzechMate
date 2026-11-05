@@ -72,18 +72,18 @@ var NAVTREEINDEX =
 "game__task_8h.html#a95ff59f2de485d9219690ece40566f80",
 "globals_t.html",
 "hall__i2c__squares_8h.html#a50ebc214fb7ce42f9550c192eb23e6f9",
-"led__gesture__anim_8h.html#a7ef738df14880121fc3359bba9da4961",
-"led__task_8c.html#a5b29e2f7276c89b3c3dd9d870dbc0245",
-"led__unified__api_8h.html",
-"position_8c.html#ab37506945d3846f8f7faa74b49194184",
-"streaming__output_8c.html#aa8255bd6562ac594bf8c271b0af18629",
-"structgame__cmd__hint__fields__t.html#a9fdebcfeeeacbf5c6ff3bde020f970a5",
-"structgame__snapshot__v2__t.html#a4f2571217b1d8874bc97821e01def0ea",
-"structmove__undo__meta__t.html#a961df11f8d1c634992598b34282c44c0",
-"test__task_8c.html#a7197f18ba1c3fef844e8d56fc3d132d4",
-"uart__task_8c.html#a35141cb45623cb3b7b4d96da35ed1831",
-"unified__animation__manager_8h.html#a7e703c09ba390bb0306ced9d307690dfa01a8550d7489dc34d42bf1668684ad8c",
-"web__server__task_8c.html#a0e726733246359d1abdcf0ac63e887a0"
+"led__gesture__anim_8h.html#a7ef738df14880121fc3359bba9da4961a26537c51c7e447ae4d8186086bf89604",
+"led__task_8c.html#a5c2607d09b8412f0a6484a21095b260f",
+"led__unified__api_8h.html#a036b1d0a0cf1289a8eec759f01b07233",
+"position_8c.html#abf16bc39c47dd71a056f61f75706b756",
+"streaming__output_8c.html#aad4c641177bba008c8ec5c0a0265ac7c",
+"structgame__cmd__hint__fields__t.html#aadead84c76d768b8aabb5b4126905477",
+"structgame__snapshot__v2__t.html#a4fa3ed7bfb52ab8a0118073a9239631e",
+"structmove__undo__meta__t.html#aa2c5edc550c4d98a5d8039abbe5eaf34",
+"test__task_8c.html#a720c34a2f3e433cd6c1b652bfd685dc2",
+"uart__task_8c.html#a39a36d85fdb280e813cc1844f95af68d",
+"unified__animation__manager_8h.html#a7e703c09ba390bb0306ced9d307690dfa08010fb2f9d9b7c15f01e516ebc7b82a",
+"web__server__task_8c.html#a0f6957e2f742d1c62ad11d7b417a67ce"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

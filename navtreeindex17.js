@@ -1,6 +1,5 @@
 var NAVTREEINDEX17 =
 {
-"streaming__output_8c.html#aa8255bd6562ac594bf8c271b0af18629":[8,0,0,4,5,25],
 "streaming__output_8c.html#aad4c641177bba008c8ec5c0a0265ac7c":[8,0,0,4,5,14],
 "streaming__output_8c.html#aae842b19f1975942c5b3674cb42fbddb":[8,0,0,4,5,22],
 "streaming__output_8c.html#ab2336e816f0a31f0e3e85fba396e4340":[8,0,0,4,5,26],
@@ -249,5 +248,6 @@ var NAVTREEINDEX17 =
 "structgame__cmd__guard__fields__t.html#a530a9e6922b2ca955ad434bc3dd3d187":[7,0,23,4],
 "structgame__cmd__guard__fields__t.html#a88a3cccfff10d078ef09e3a34f626946":[7,0,23,2],
 "structgame__cmd__guard__fields__t.html#aebc618b63f0efc0ddd85aee31b9de503":[7,0,23,1],
-"structgame__cmd__hint__fields__t.html":[7,0,24]
+"structgame__cmd__hint__fields__t.html":[7,0,24],
+"structgame__cmd__hint__fields__t.html#a9fdebcfeeeacbf5c6ff3bde020f970a5":[7,0,24,0]
 };
