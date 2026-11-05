@@ -85,6 +85,14 @@ menu "Chess matrix input"
         config CHESS_HALL_LOG_INTERVAL_SCANS
             int "Log summary every N scans (0 = off)"
             default 0
+
+        config CHESS_HALL_LIFT_HYSTERESIS
+            bool "Lift re-occupy hysteresis (anti-flicker while empty)"
+            default y
+            help
+                After a published lift, require sustained re-occupy evidence
+                before the square reads placed again. Disabling restores the
+                pre-hysteresis occupancy decision (host replay baseline).
     endmenu
 
 endmenu

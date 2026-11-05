@@ -1,5 +1,6 @@
 #include "hall_i2c_squares.h"
 #include "hall_i2c_spec.h"
+#include "hall_presence.h"
 #include "freertos_chess.h"
 #include "sdkconfig.h"
 #include <stdio.h>
@@ -268,6 +269,9 @@ typedef struct {
     int32_t zero_backup[2];         /**< Midpoint to restore if the new zero is discarded. */
     bool zero_has_backup;
     bool zero_pending;
+    int32_t lift_vacant_peak;
+    bool lift_ctx_fresh;
+    uint16_t lift_block_scans;
 } hall_poc_square_state_t;
 
 /** Per-square state — hysteresis and debounce are NOT global across the board. */
@@ -1174,51 +1178,38 @@ static uint8_t hall_poc_update_square(uint8_t sq, uint16_t r0, uint16_t r1) {
         fringe1 = c1;
         eff_energy = ctx_energy;
     }
-    bool signal = energy >= HALL_REOCCUPY_ENERGY ||
-                  (st->ctx_valid && ctx_energy >= HALL_REOCCUPY_ENERGY);
-    bool above = !ctx_low &&
-                 !hall_opposite_fringe(sq, fringe0, fringe1, eff_energy) &&
-                 signal;
-    /* A piece already published beside a king keeps its seat. A one-scan
-     * spike that never became reported must still earn the four scans. */
-    if (royal && st->occupied && st->reported && !st->lift_block && above &&
-        st->prove_scans < HALL_REOCCUPY_SCANS) {
-        st->prove_scans = HALL_REOCCUPY_SCANS;
-    }
-    bool strict = st->lift_block || royal;
-    bool sensor_present;
-    if (strict) {
-        if (above) {
-            if (st->prove_scans == 0 && st->stable_scans > 1) {
-                st->stable_scans = 1;
-            }
-            if (st->prove_scans < 255) {
-                st->prove_scans++;
-            }
-        } else if (st->prove_scans < HALL_REOCCUPY_SCANS) {
-            st->prove_scans = 0;
-        }
-        sensor_present = above && st->prove_scans >= HALL_REOCCUPY_SCANS;
-    } else if (!above) {
-        sensor_present = false;
-    } else {
-        sensor_present = true;
-    }
-    if (!st->occupied || sensor_present) {
-        st->vacant_scans = 0;
-    } else if (st->vacant_scans < 255) {
-        st->vacant_scans++;
-    }
-    /* Mask still rides through a dip of a piece that is really there.
-     * It must not keep a square that has already fallen through the gap. */
-    bool mask_hold = st->occupied && st->mask_scans > 0 && above;
-    bool present = sensor_present || mask_hold ||
-                   (st->occupied &&
-                    st->current_piece != HALL_PIECE_TYPE_NONE &&
-                    st->vacant_scans < HALL_LIFT_CONFIRM_SCANS);
-    if (present != st->occupied && !(present && strict)) {
-        st->stable_scans = 0;
-    }
+    hall_presence_inputs_t pin = {
+        .energy = energy,
+        .ctx_energy = ctx_energy,
+        .ctx_valid = st->ctx_valid,
+        .ctx_low = ctx_low,
+        .fringe_veto = hall_opposite_fringe(sq, fringe0, fringe1, eff_energy),
+        .royal = royal,
+    };
+    hall_presence_state_t pstate = {
+        .occupied = st->occupied,
+        .reported = st->reported,
+        .lift_block = st->lift_block,
+        .piece_is_none = st->current_piece == HALL_PIECE_TYPE_NONE,
+        .prove_scans = st->prove_scans,
+        .vacant_scans = st->vacant_scans,
+        .stable_scans = st->stable_scans,
+        .mask_scans = st->mask_scans,
+        .lift_vacant_peak = st->lift_vacant_peak,
+        .lift_ctx_fresh = st->lift_ctx_fresh,
+        .lift_block_scans = st->lift_block_scans,
+    };
+    hall_presence_result_t pres;
+    hall_presence_step(&pin, &pstate, &pres);
+    st->prove_scans = pstate.prove_scans;
+    st->vacant_scans = pstate.vacant_scans;
+    st->stable_scans = pstate.stable_scans;
+    st->lift_vacant_peak = pstate.lift_vacant_peak;
+    st->lift_ctx_fresh = pstate.lift_ctx_fresh;
+    st->lift_block_scans = pstate.lift_block_scans;
+    bool above = pres.above;
+    bool sensor_present = pres.sensor_present;
+    bool present = pres.present;
     bool hold_neighbor = st->mask_scans > 0;
     if (hold_neighbor) {
         st->mask_scans--;
@@ -1228,9 +1219,14 @@ static uint8_t hall_poc_update_square(uint8_t sq, uint16_t r0, uint16_t r1) {
         st->ctx_arm--;
     }
 
+    bool reported_before = st->reported;
+
     if (!present) {
         if (st->occupied && st->reported) {
             st->lift_block = true;
+            st->lift_ctx_fresh = false;
+            st->lift_block_scans = 0;
+            st->lift_vacant_peak = 0;
         }
         if (st->occupied) {
             st->prove_scans = 0;
@@ -1264,6 +1260,11 @@ static uint8_t hall_poc_update_square(uint8_t sq, uint16_t r0, uint16_t r1) {
                     st->ctx_ref[0] += ((int32_t)filt0 - st->ctx_ref[0]) / HALL_CTX_EMA_DIV;
                     st->ctx_ref[1] += ((int32_t)filt1 - st->ctx_ref[1]) / HALL_CTX_EMA_DIV;
                 }
+#if CONFIG_CHESS_HALL_LIFT_HYSTERESIS
+                if (st->lift_block) {
+                    st->lift_ctx_fresh = true;
+                }
+#endif
             }
         }
         if (st->current_piece != HALL_PIECE_TYPE_NONE) {
@@ -1397,6 +1398,16 @@ static uint8_t hall_poc_update_square(uint8_t sq, uint16_t r0, uint16_t r1) {
                 }
             }
         }
+    }
+
+    if (st->reported != reported_before && !s_mag_on) {
+        ESP_LOGI(TAG,
+                 "sq %u reported %d E=%ld ctxE=%ld ctxV=%d prove=%u vac=%u "
+                 "lift_blk=%d stable=%u",
+                 (unsigned)sq, st->reported ? 1 : 0, (long)energy,
+                 (long)ctx_energy, st->ctx_valid ? 1 : 0,
+                 (unsigned)st->prove_scans, (unsigned)st->vacant_scans,
+                 st->lift_block ? 1 : 0, (unsigned)st->stable_scans);
     }
 
     /* Stale midpoint after a piece leaves. Ctx still says empty. Walk one
