@@ -1463,8 +1463,6 @@ void stm32_i2c_bl_maybe_auto_flash_on_boot(void) {
     any_nrst = true;
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
     uint8_t addr7 = bl_hall_segment_addr7(seg);
-#else
-    uint8_t addr7 = (uint8_t)(0x30u + seg);
 #endif
     stm32_part_fill_ctx_t fill_ctx = {
         .part = part,

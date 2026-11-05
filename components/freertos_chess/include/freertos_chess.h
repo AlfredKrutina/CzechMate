@@ -381,19 +381,7 @@ extern TimerHandle_t button_scan_timer;
 /** @brief Timer pro periodicke kontroly zdravi systemu */
 extern TimerHandle_t system_health_timer;
 
-// ============================================================================
-// GPIO PIN POLE
-// ============================================================================
-
-/** @brief GPIO pin array for matrix rows (8 output) */
-extern const gpio_num_t matrix_row_pins[8];
-/** @brief GPIO pin array for matrix columns (8 inputs with pull-up) */
-extern const gpio_num_t matrix_col_pins[8];
-/** @brief GPIO pin array for promotion button A (4 buttons) */
-extern const gpio_num_t promotion_button_pins_a[4];
-// NEPOUZIVANO: Toto pole se nikde v kodu nepouziva!
-// /** @brief GPIO pin array for promotion button B (4 buttons) */
-// extern const gpio_num_t promotion_button_pins_b[4];
+// Reed row/column arrays lived with the V1 multiplex. See kos/v1-reed/firmware.
 
 // ============================================================================
 // SYSTEM INITIALIZATION FUNCTIONS

@@ -256,94 +256,6 @@ static void squares_scan_row_internal(uint8_t row) {
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
   (void)row;
   return;
-#else
-
-  // IMPROVED: Switch all lines to INPUT before activating the current line
-  // This is safer than just setting it to HIGH because it prevents conflicts
-  // when switching between lines (as in the reference code)
-  for (int i = 0; i < 8; i++) {
-    gpio_config_t io_conf = {.pin_bit_mask = (1ULL << matrix_row_pins[i]),
-                             .mode = GPIO_MODE_INPUT,
-                             .pull_up_en = GPIO_PULLUP_DISABLE,
-                             .pull_down_en = GPIO_PULLDOWN_DISABLE,
-                             .intr_type = GPIO_INTR_DISABLE};
-    gpio_config(&io_conf);
-  }
-
-  // IMPROVED: Use esp_rom_delay_us instead of vTaskDelay (timer callback
-  // context)
-  extern void esp_rom_delay_us(uint32_t us);
-  esp_rom_delay_us(20); // 20us settling time (reduced from 1ms)
-
-  // Set current line to OUTPUT and LOW (activation)
-  // This pulls the column pin LOW if there is a piece (reed
-  // switch closed)
-  gpio_config_t io_conf = {.pin_bit_mask = (1ULL << matrix_row_pins[row]),
-                           .mode = GPIO_MODE_OUTPUT,
-                           .pull_up_en = GPIO_PULLUP_DISABLE,
-                           .pull_down_en = GPIO_PULLDOWN_DISABLE,
-                           .intr_type = GPIO_INTR_DISABLE};
-  gpio_config(&io_conf);
-  gpio_set_level(matrix_row_pins[row], 0); // LOW = active
-
-  // GPIO settling time: 200us for signal stabilization (long wires support)
-  // For digital signals with long cables (capacitance), we need more time
-  // for the signal to fall to logic LOW (grounding).
-  esp_rom_delay_us(200);
-
-  // Read all column pins for this row
-  // Column pins have a pull-up, so they will be HIGH without the figure
-  // If the figure is (reed switch closed), the column pin will be LOW
-  
-  // Read all column pins for this row
-  // Column pins have a pull-up, so they will be HIGH without the figure
-  // If the figure is (reed switch closed), the column pin will be LOW
-  
-  for (int col = 0; col < 8; col++) {
-    // Invert column index to fix GPIO physical wiring (H→A instead of
-    // A→H) GPIO pins are wired in reverse: pin 0 = column H, pin 7 = column A
-    // So we invert: col 0 → index 7 (H), col 1 → index 6 (G), ..., col 7 →
-    // index 0 (A)
-    int inverted_col = 7 - col;
-    int index = row * 8 + inverted_col;
-    
-    // DEBUG: Check if this is GPIO17 (column 7)
-    bool is_gpio17 = (matrix_col_pins[col] == GPIO_NUM_17);
-    
-    int pin_level = gpio_get_level(matrix_col_pins[col]);
-
-    // In simulation mode, use simulated values
-    if (simulation_mode) {
-      squares_state[index] = simulation_patterns[current_pattern][index];
-    } else {
-      // Real hardware: reed switch closed = piece present
-      // pin_level == 0 means that the column pin is pulled to LOW (the figure is
-      // present)
-      // NOTE: GPIO17 is configured with pull-down for debug testing
-      // Normal logic still applies, but we'll log values for analysis
-      squares_state[index] = (pin_level == 0) ? 1 : 0;
-      
-      // DEBUG: Minimal logging for GPIO17 (user testing with multimeter)
-      // Only log first state change to confirm scanning works
-      static int last_gpio17_level = -1;
-      static bool gpio17_logged_once = false;
-      if (is_gpio17 && !gpio17_logged_once) {
-        ESP_LOGI(TAG, "🔍 GPIO17 scan confirmed: row=%d, level=%d (pull-down mode)", row, pin_level);
-        gpio17_logged_once = true;
-        last_gpio17_level = pin_level;
-      } else if (is_gpio17 && last_gpio17_level == -1) {
-        last_gpio17_level = pin_level;
-      }
-    }
-  }
-
-  // IMPROVED: Switch line back to INPUT after scan (safer)
-  io_conf.pin_bit_mask = (1ULL << matrix_row_pins[row]);
-  io_conf.mode = GPIO_MODE_INPUT;
-  gpio_config(&io_conf);
-
-  // A small wait before the next line for stabilization
-  esp_rom_delay_us(20); // 20us delay (reduced from 2ms)
 #endif
 }
 
@@ -367,9 +279,8 @@ void squares_scan_row(uint8_t row) {
 }
 
 /*
- * Kconfig CHESS_MATRIX_INPUT:
- * - GPIO_REED: squares_scan_row_internal(0..7) loop below — row multiplex.
- * - I2C_HALL: hall_i2c_squares_fill_state() (read from STM slave addresses).
+ * Kconfig CHESS_MATRIX_INPUT is Hall I2C only.
+ * squares_scan_all() calls hall_i2c_squares_prepare_scan() / publish_scan().
  * STM32 flash over I2C when CHESS_STM32_I2C_BL_ENABLE is on: bootloader on its own
  * suspend scan (squares_scanning_enabled in stm32_i2c_bl.c) until flash is done.
  */
@@ -391,8 +302,6 @@ static bool squares_sensors_accept_events(void) {
     s_hall_was_usable = true;
   }
   return s_hall_was_usable;
-#else
-  return true;
 #endif
 }
 
@@ -422,10 +331,6 @@ void squares_scan_all(void) {
       }
       if (!simulation_mode) {
         squares_hall_refresh_last_occupied_snapshot();
-      }
-#else
-      for (int row = 0; row < 8; row++) {
-        squares_scan_row_internal(row);
       }
 #endif
 
@@ -475,10 +380,6 @@ void squares_scan_all(void) {
     }
     if (!simulation_mode) {
       squares_hall_refresh_last_occupied_snapshot();
-    }
-#else
-    for (int row = 0; row < 8; row++) {
-      squares_scan_row_internal(row);
     }
 #endif
 
@@ -677,154 +578,6 @@ void squares_detect_moves(void) {
   /* Per-square wakeups only. The game diffs the snapshot; nothing is tracked. */
   squares_hall_publish_changes();
   return;
-#else
-  // Reed: one lifted square, then the drop that completes it.
-  if (last_piece_lifted != 255) {
-    uint32_t current_time = esp_timer_get_time() / 1000;
-    if (current_time > move_detection_timeout) {
-      ESP_LOGW(TAG,
-               "⏰ Move taking longer than 5s - piece from %d still in air",
-               last_piece_lifted);
-      // DON'T reset last_piece_lifted - allow longer moves
-      // Just extend timeout to give player more time
-      move_detection_timeout = current_time + 5000; // Give another 5 seconds
-    }
-  }
-
-  // Collect full delta in this scan to detect ambiguous states.
-  uint8_t piece_lifted = 255;
-  uint8_t piece_placed = 255;
-  uint8_t lift_count = 0;
-  uint8_t drop_count = 0;
-  uint32_t lifted_mask_low = 0;
-  uint32_t lifted_mask_high = 0;
-  uint32_t dropped_mask_low = 0;
-  uint32_t dropped_mask_high = 0;
-  for (int i = 0; i < 64; i++) {
-    if (squares_previous[i] == 1 && squares_state[i] == 0) {
-      lift_count++;
-      if (piece_lifted == 255) {
-        piece_lifted = i;
-      }
-      if (i < 32) {
-        lifted_mask_low |= (1UL << i);
-      } else {
-        lifted_mask_high |= (1UL << (i - 32));
-      }
-    } else if (squares_previous[i] == 0 && squares_state[i] == 1) {
-      drop_count++;
-      if (piece_placed == 255) {
-        piece_placed = i;
-      }
-      if (i < 32) {
-        dropped_mask_low |= (1UL << i);
-      } else {
-        dropped_mask_high |= (1UL << (i - 32));
-      }
-    }
-  }
-
-  // Two UP in a row: normally ambiguous (matrix guard), but guided capture
-  // (victim first, then attacker) and 3-step defense (own → opponent) require it.
-  bool multi_change = (lift_count > 2) || (drop_count > 1) ||
-                      (lift_count == 2 && drop_count > 0);
-  bool pending_lift_and_new_up =
-      (last_piece_lifted != 255 && lift_count > 0);
-  bool ambiguous_state = multi_change;
-  if (!ambiguous_state && pending_lift_and_new_up) {
-    if (!(lift_count == 1 && game_squares_allow_second_sequential_lift())) {
-      ambiguous_state = true;
-    }
-  }
-
-  if (ambiguous_state) {
-    if (!squares_guard_mode_active) {
-      if (!game_policy_squares_guard_enabled()) {
-        ESP_LOGW(TAG,
-                 "Ambiguous matrix state ignored (matrix guard disabled)");
-        return;
-      }
-      // Snapshot expected board occupancy before anomaly; game_task realigns to
-      // board[] when handling a board-guard command.
-      memcpy(squares_guard_expected_state, squares_previous,
-             sizeof(squares_guard_expected_state));
-      squares_guard_mode_active = true;
-      last_piece_lifted = 255;
-      last_piece_placed = 255;
-      move_detection_timeout = 0;
-      squares_send_guard_command(lifted_mask_low, lifted_mask_high, dropped_mask_low,
-                                dropped_mask_high, 1);
-    }
-    return;
-  }
-
-  if (squares_guard_mode_active) {
-    // Keep matrix flow paused until board occupancy is back to expected state.
-    bool back_to_expected =
-        (memcmp(squares_state, squares_guard_expected_state,
-                sizeof(squares_guard_expected_state)) == 0);
-    if (lift_count == 0 && drop_count == 0 && back_to_expected) {
-      squares_guard_mode_active = false;
-      squares_send_guard_command(0, 0, 0, 0, 0);
-    }
-    return;
-  }
-
-  if (lift_count == 2 && drop_count == 0) {
-    for (int i = 0; i < 64; i++) {
-      if (squares_previous[i] == 1 && squares_state[i] == 0) {
-        last_piece_lifted = (uint8_t)i;
-        move_detection_timeout = esp_timer_get_time() / 1000 + 5000;
-        squares_send_pickup_command((uint8_t)i);
-      }
-    }
-    return;
-  }
-
-  // Process move detection
-  if (piece_lifted != 255) {
-    last_piece_lifted = piece_lifted;
-    move_detection_timeout =
-        esp_timer_get_time() / 1000 + 5000; // 5 second timeout
-
-    // Convert square index to row/col
-    uint8_t from_row = piece_lifted / 8;
-    uint8_t from_col = piece_lifted % 8;
-
-    ESP_LOGI(TAG, "Piece lifted from square %d (%c%d)", piece_lifted,
-             'a' + from_col, from_row + 1);
-
-    // Send PICKUP through game_submit (same path as web, BLE, and main)
-    squares_send_pickup_command(piece_lifted);
-  }
-
-  if (piece_placed != 255) {
-    last_piece_placed = piece_placed;
-
-    // Convert square index to row/col
-    uint8_t to_row = piece_placed / 8;
-    uint8_t to_col = piece_placed % 8;
-
-    ESP_LOGI(TAG, "Piece placed on square %d (%c%d)", piece_placed,
-             'a' + to_col, to_row + 1);
-
-    // Check if this completes a move
-    if (last_piece_lifted != 255) {
-      if (last_piece_lifted == piece_placed) {
-        // Return to same square - send with from=to
-        ESP_LOGI(TAG,
-                 "Piece returned to same square - sending DROP with from=to");
-        squares_send_drop_command_with_from(last_piece_lifted, piece_placed);
-      } else {
-        // Complete move - send with from/to
-        squares_send_drop_command_with_from(last_piece_lifted, piece_placed);
-      }
-      last_piece_lifted = 255; // Reset
-    } else {
-      ESP_LOGW(TAG, "Piece placed without previous lift (square %d) - ignoring",
-               piece_placed);
-    }
-  }
 #endif
 }
 
@@ -1160,10 +913,6 @@ void squares_abort_ambiguous_guard_baseline(void) {
 void squares_release_pins(void) {
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
   (void)0;
-#else
-  for (int row = 0; row < 8; row++) {
-    gpio_set_level(matrix_row_pins[row], 1);
-  }
 #endif
   ESP_LOGD(TAG, "Matrix pins released for button scan");
 }
@@ -1192,13 +941,6 @@ void squares_acquire_pins(void) {
  */
 bool squares_pins_released(void) {
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
-  return true;
-#else
-  for (int row = 0; row < 8; row++) {
-    if (gpio_get_level(matrix_row_pins[row]) == 0) {
-      return false;
-    }
-  }
   return true;
 #endif
 }

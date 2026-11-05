@@ -6,7 +6,6 @@
 # (there GPIO10/11 are matrix rows). See docs/reference/WIRING_ESP_STM4.md
 
 # Matrix input via I2C Hall (STM32 slave)
-# CONFIG_CHESS_MATRIX_INPUT_GPIO_REED is not set
 CONFIG_CHESS_MATRIX_INPUT_I2C_HALL=y
 
 # V2 board uses the Flutter app. Browser page is not in the image (kos/unused/web_ui).

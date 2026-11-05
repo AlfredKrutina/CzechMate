@@ -2,7 +2,7 @@
 
 Canonical path inventory in the repo. Entry index: [docs/README.md](../README.md). Quick overview for new readers: [README.md](../../README.md).
 
-**Firmware in repo:** **1.8.0** (prototype **V1**, reed matrix — occupied/empty). **V2** = Hall sensors (currently differential occupancy; piece type/color is the hardware design goal) — see [HARDWARE_VERSIONS.md](HARDWARE_VERSIONS.md), [hardware/v1-reed-matrix/README.md](../../hardware/v1-reed-matrix/README.md), and [hardware/v2-hall-stm32/README.md](../../hardware/v2-hall-stm32/README.md).
+**Firmware in repo:** **1.8.0**. The live build is Hall I2C. Reed V1 sources and the board note are in [kos/v1-reed](../../kos/v1-reed) and are not linked. Hall wiring and versions: [WIRING_ESP_STM4.md](../hardware/WIRING_ESP_STM4.md), [HARDWARE_VERSIONS.md](../hardware/HARDWARE_VERSIONS.md).
 
 ---
 
@@ -26,9 +26,8 @@ chess_esp32_c6_devkit/
 ├── main/                    # ESP-IDF boot, task startup
 ├── components/              # FreeRTOS modules (see table below)
 ├── flutter_czechmate/       # Flutter client (BLE / HTTP / WS)
-├── hardware/
-│   ├── v1-reed-matrix/      # V1 prototype hardware docs (reed switch matrix)
-│   └── v2-hall-stm32/       # V2 production hardware docs (Hall sensors + STM32)
+├── kos/v1-reed/             # Archived reed board docs and the old firmware snapshot
+├── context/hardware/        # Hall wiring, versions, matrix guard
 ├── docs/                    # Human docs + diagrams
 ├── scripts/                 # Automation — see scripts/README.md
 ├── firmware/
@@ -53,7 +52,7 @@ Generated / gitignored: `build/`, `managed_components/`, `doxygen/html/`, `conte
 | Group | Components | Note |
 |---------|------------|----------|
 | **Core** | `freertos_chess`, `chess_core`, `game_task`, `game_hooks`, `timer_system` | Queues, rules (`chess_core`), session, clock |
-| **Inputs** | `squares_task`, `button_task`, `stm32_i2c_bootloader` | Reed V1 / I²C Hall V2 (differential occupancy; piece-type decoding is not in squares_task) |
+| **Inputs** | `squares_task`, `button_task`, `stm32_i2c_bootloader` | Hall I2C occupancy; one gesture button on the Hall PCB |
 | **Outputs** | `led_task`, `led_state_manager`, `unified_animation_manager`, `game_led_animations`, `visual_error_system` | WS2812B, animation, errors |
 | **Connectivity** | `uart_task`, `web_server_task`, `ble_task`, `ha_light_task`, `transport_policy`, `ota_guard` | Console, HTTP, BLE, MQTT, OTA |
 | **Support** | `config_manager`, `test_task` | NVS/config; tests (menuconfig) |
@@ -66,9 +65,9 @@ components/
 ├── freertos_chess/          # Queues, mutexes, LED mapping
 ├── chess_core/              # position_t, FEN, movegen (no FreeRTOS)
 ├── game_task/               # Chess session (largest module)
-├── squares_task/            # 8×8 reed scan / I2C Hall differential occupancy
+├── squares_task/            # I2C Hall occupancy
 ├── led_task/                # WS2812B + animation pipeline
-├── button_task/             # Buttons (promotion, reset, …)
+├── button_task/             # V2 gesture button (GPIO23 when enabled)
 ├── uart_task/               # USB Serial JTAG console
 ├── web_server_task/         # WiFi + HTTP /api + /ws (browser page is in kos/unused/web_ui)
 ├── ble_task/                # NimBLE GATT

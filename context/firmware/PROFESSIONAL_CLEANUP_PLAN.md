@@ -1,7 +1,6 @@
 # Code professionalization plan — CZECHMATE firmware 1.8.0
 
-**Status:** proposal (2026-07-10)  
-**Goal:** cleaner, maintainable, verifiable code **without behavior change** on HW V1.  
+**Status:** proposal (2026-07-10). Not the current tree. It names `matrix_task.c`. That file is `components/squares_task/squares_task.c`, and the live sensor is Hall.  
 **Entry index:** [docs/README.md](../README.md) · [REPO_LAYOUT.md](REPO_LAYOUT.md) (branch `cursor/repo-organize-complete-8fdd`)
 
 ---

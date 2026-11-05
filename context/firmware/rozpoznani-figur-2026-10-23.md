@@ -17,21 +17,25 @@ Senzory DRV5055A1 jsou 11,2 mm pod čelem magnetu, pár má rozteč 6,267 mm a k
 
 ## Jak se počítá pole
 
-Energie `E = dev0² + dev1²`. Odchylka je filtrovaný ADC minus nula prázdného pole (`ctx_ref`, jinak `midpoint`). Barva je znaménko silnější odchylky: kladná bílá, záporná černá. Obsazení drží součet absolutních odchylek, zapnutí od 270, vypnutí pod 160. Mrtvé pásmo energie je 15000. Ustálení trvá 250 ms a připouští asi 4 % změnu (`HALL_STABLE_REL_DIV` 25). Sken polí je 25 ms.
+Energie `E = dev0² + dev1²`. Odchylka je filtrovaný ADC minus nula prázdného pole (`ctx_ref`, jinak `midpoint`). Barva je znaménko silnější odchylky: kladná bílá, záporná černá. Ustálení typu trvá 250 ms a připouští asi 4 % změnu (`HALL_STABLE_REL_DIV` 25). Sken polí je 25 ms.
 
-Log `>>> POC sq NN changed to [BARVA TYP] (E=… d0=… d1=… ctx) <<<` píše energii i obě odchylky. Příkaz `HALL` na lavičce tiskne tři čísla: energii, dev0 a dev1.
+Obsazení ve firmwaru nepoužívá součet odchylek 270/160. Pole se zveřejní jako obsazené, když energie drží aspoň `HALL_REOCCUPY_ENERGY` (18000) po `HALL_REOCCUPY_SCANS` (4) skeny. Zvednutí jde ven po `HALL_LIFT_CONFIRM_SCANS` (2) prázdných skenech. `HALL_POC_ENERGY_DEADBAND` je 10000 a v klasifikaci se používá. `HALL_POC_DELTA_ON` (270), `HALL_POC_DELTA_OFF` (160) a `HALL_POC_ENERGY_ON` (25000) v souboru zůstaly a nikdo je nečte.
+
+Řádek `>>> POC sq` ve firmwaru není. UART `HALL BOARD` tiskne typ, barvu, obsazení, energii, dev0 a dev1.
 
 ## Pásma energie
 
-Pásma na sebe navazují. Hystereze je 10 %, kromě dámy směrem nahoru: ta se drží jen do svého stropu, aby silný král nezůstal dámou.
+Pásma v `s_poc_thresholds` na sebe navazují. Podlaha pěšce je 10000, protože pěšec na výchozí řadě padal pod starou podlahu 71610. Strop věže je 2511729; starý strop 1724251 pojmenovával věž jako dámu. Dáma začíná na 2511730. Král vlastní pásmo nemá.
 
-| Typ | Energie od | Energie do | Z čeho |
-| --- | ---: | ---: | --- |
-| Pěšec | 71610 | 250080 | podlaha 8 % pod nejslabším pěšcem 77837 |
-| Jezdec | 250081 | 613704 | shluk 421057, 455060, 484445, 549130, 577792 |
-| Střelec | 613705 | 1380458 | shluk 651850 až 1242413 |
-| Věž | 1380459 | 1724251 | neměřeno, nebrat jako skutečnou věž |
-| Dáma, surově | 1724252 | 7500000 | společné pásmo dámy a krále |
+| Typ | Energie od | Energie do |
+| --- | ---: | ---: |
+| Pěšec | 10000 | 250080 |
+| Jezdec | 250081 | 613704 |
+| Střelec | 613705 | 1380458 |
+| Věž | 1380459 | 2511729 |
+| Dáma | 2511730 | 7500000 |
+
+Měření z 23. října, ze kterého ta pásma vznikla: nejslabší pěšec 77837, jezdci 421057 až 577792, střelci 651850 až 1242413. Věž se ten den neměřila.
 
 Hrana jezdec/střelec je `round(sqrt(577792 × 651850))` = 613705. Ocas střelce 489376 a log 547885 jsou schválně v pásmu jezdce. Střelec 1107410 a 1242413 zůstává střelec, ne věž. Nominály pro zisk pole: pěšec 120000, jezdec 484445, střelec 787792.
 

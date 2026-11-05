@@ -143,24 +143,8 @@ static bool system_initialized = false;
 static bool hardware_initialized = false;
 static bool freertos_initialized = false;
 
-// GPIO pin arrays
-const gpio_num_t matrix_row_pins[8] = {MATRIX_ROW_0, MATRIX_ROW_1, MATRIX_ROW_2,
-                                       MATRIX_ROW_3, MATRIX_ROW_4, MATRIX_ROW_5,
-                                       MATRIX_ROW_6, MATRIX_ROW_7};
-
-const gpio_num_t matrix_col_pins[8] = {MATRIX_COL_0, MATRIX_COL_1, MATRIX_COL_2,
-                                       MATRIX_COL_3, MATRIX_COL_4, MATRIX_COL_5,
-                                       MATRIX_COL_6, MATRIX_COL_7};
-
-const gpio_num_t promotion_button_pins_a[4] = {BUTTON_QUEEN, BUTTON_ROOK,
-                                               BUTTON_BISHOP, BUTTON_KNIGHT};
-
-// NOT USED: This field is not used anywhere in the code!
-// It was originally designed for a second set of promotion buttons, but the system
-// only uses promotion_button_pins_a (4 shared buttons for both players).
-// const gpio_num_t promotion_button_pins_b[4] = {
-//     BUTTON_PROMOTION_QUEEN, BUTTON_PROMOTION_ROOK, BUTTON_PROMOTION_BISHOP,
-//     BUTTON_PROMOTION_KNIGHT};
+// Reed row/column and promotion-button pin tables are in
+// kos/v1-reed/firmware. Hall does not multiplex those GPIOs.
 
 // ============================================================================
 // GPIO VALIDATION FUNCTIONS
@@ -213,8 +197,7 @@ esp_err_t chess_gpio_init(void) {
   ESP_LOGI(TAG, "Initializing GPIO pins...");
 
   // DEBUG: Pin definition verification
-  ESP_LOGI(TAG, "DEBUG: STATUS_LED_PIN = GPIO%d, BUTTON_RESET = GPIO%d",
-           STATUS_LED_PIN, BUTTON_RESET);
+  ESP_LOGI(TAG, "DEBUG: STATUS_LED_PIN = GPIO%d", STATUS_LED_PIN);
   ESP_LOGI(TAG, "DEBUG: LED_DATA_PIN = GPIO%d", LED_DATA_PIN);
 
   // GPIO initialization - no WDT reset needed during init
@@ -231,158 +214,11 @@ esp_err_t chess_gpio_init(void) {
   if (ret != ESP_OK)
     return ret;
 
-#ifndef CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
-  // Validate matrix row pins (reed multiplex); at I2C Hall are row pins
-  // unoccupied or SDA/SCL.
-  for (int i = 0; i < 8; i++) {
-    ret = validate_gpio_pin(matrix_row_pins[i], "MATRIX_ROW");
-    if (ret != ESP_OK)
-      return ret;
-  }
-#endif
-
-  // Validate matrix column pins
-  for (int i = 0; i < 8; i++) {
-    // GPIO validation - no WDT reset needed during init
-    ret = validate_gpio_pin(matrix_col_pins[i], "MATRIX_COL");
-    if (ret != ESP_OK)
-      return ret;
-  }
-
-  // Validate reset button pin
-  if (!chess_gpio_pin_is_stm32_nrst_output((int)BUTTON_RESET)) {
-    ret = validate_gpio_pin(BUTTON_RESET, "BUTTON_RESET");
-    if (ret != ESP_OK)
-      return ret;
-  }
 
   ESP_LOGI(TAG, "✓ GPIO safety checks passed");
 
   // GPIO configuration - no WDT reset needed during init
 
-#ifndef CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
-  // Configure matrix row pins as outputs (reed multiplex)
-  for (int i = 0; i < 8; i++) {
-    uint32_t pin_number = (uint32_t)matrix_row_pins[i];
-    uint64_t pin_mask = (1ULL << pin_number);
-
-    ESP_LOGI(TAG, "Configuring MATRIX_ROW_%d (GPIO%" PRIu32 ", mask=0x%llx)...", i,
-             pin_number, pin_mask);
-
-    gpio_config_t io_conf = {.pin_bit_mask = pin_mask,
-                             .mode = GPIO_MODE_OUTPUT,
-                             .pull_up_en = GPIO_PULLUP_DISABLE,
-                             .pull_down_en = GPIO_PULLDOWN_DISABLE,
-                             .intr_type = GPIO_INTR_DISABLE};
-    ret = gpio_config(&io_conf);
-    ESP_LOGI(TAG, "gpio_config returned %s", esp_err_to_name(ret));
-
-    if (ret != ESP_OK) {
-      ESP_LOGE(TAG, "Failed to configure matrix row pin %d (GPIO%" PRIu32 "): %s", i,
-               pin_number, esp_err_to_name(ret));
-      return ret;
-    } else {
-      gpio_set_level(matrix_row_pins[i], 1);
-      ESP_LOGI(TAG, "gpio_set_level done for GPIO%" PRIu32, pin_number);
-    }
-  }
-#else
-  ESP_LOGI(TAG, "Matrix row GPIO skipped (CONFIG_CHESS_MATRIX_INPUT_I2C_HALL)");
-#endif
-
-  // Configure matrix column pins as inputs with pull-up
-  ESP_LOGI(TAG, "DEBUG: Starting matrix column configuration loop");
-  for (int i = 0; i < 8; i++) {
-    // WDT reset removed during initialization
-
-    // Bitmask with explicit casting
-    uint32_t pin_number = (uint32_t)matrix_col_pins[i];
-    uint64_t pin_mask = (1ULL << pin_number);
-
-    ESP_LOGI(TAG, "Configuring MATRIX_COL_%d (GPIO%" PRIu32 ", mask=0x%llx)...", i,
-             pin_number, pin_mask);
-
-    // DEBUG: Special logging for GPIO17 (column 7)
-    if (pin_number == 17) {
-      ESP_LOGI(TAG, "🔍 DEBUG: Configuring GPIO17 (MATRIX_COL_7, index=%d)", i);
-    }
-
-    // CRITICAL: Skip strapping pins to avoid system reset
-    if (pin_number == 9) {
-      ESP_LOGW(TAG, "Skipping GPIO%" PRIu32 " (strapping pin) to avoid system reset",
-               pin_number);
-      ESP_LOGI(TAG, "Matrix column pin %d skipped (strapping pin)", i);
-      ESP_LOGI(TAG, "DEBUG: About to continue to next iteration");
-      continue; // Skipping the strapping pin
-    }
-
-    ESP_LOGI(TAG, "DEBUG: Proceeding with GPIO%" PRIu32 " configuration", pin_number);
-
-    /* PCB profile: GPIO1..4 are STM32 NRST. Do not turn them into reed inputs. */
-    if (chess_gpio_pin_is_stm32_nrst_output((int)pin_number)) {
-      ESP_LOGW(TAG,
-               "[STAGING] MATRIX_COL_%d GPIO%" PRIu32
-               " is STM32 NRST — not configured as a matrix input",
-               i, pin_number);
-      continue;
-    }
-
-    // Explicitly reset GPIO17 before configuration
-    // GPIO17 is UART0 RX pin on ESP32-C6 and may have special properties
-    // that need to be cleared before using it as GPIO input
-    if (pin_number == 17) {
-      ESP_LOGI(TAG, "🔍 DEBUG: Resetting GPIO17 before configuration (UART0 RX pin)");
-      gpio_reset_pin(GPIO_NUM_17);
-      // Small delay to ensure reset is complete
-      vTaskDelay(pdMS_TO_TICKS(10));
-      
-      // CRITICAL: Explicitly switch GPIO17 from UART function to GPIO function
-      // GPIO17 is UART0 RX pin on ESP32-C6 and may be stuck in UART mode
-      // even if UART driver is not active. We need to force it to GPIO mode.
-      // Strategy: Call gpio_set_direction() BEFORE gpio_config() to ensure
-      // IOMUX is switched to GPIO function before configuration
-      gpio_set_direction(GPIO_NUM_17, GPIO_MODE_INPUT);
-      ESP_LOGI(TAG, "🔧 DEBUG: GPIO17 direction set to INPUT (forcing IOMUX switch from UART to GPIO)");
-      
-      // Small delay to ensure IOMUX switch is complete
-      vTaskDelay(pdMS_TO_TICKS(5));
-    }
-
-    // WDT reset removed during initialization
-
-    // Configure all matrix column pins as INPUT with pull-up (standard configuration)
-    gpio_config_t io_conf = {.pin_bit_mask = pin_mask,
-                             .mode = GPIO_MODE_INPUT,
-                             .pull_up_en = GPIO_PULLUP_ENABLE,
-                             .pull_down_en = GPIO_PULLDOWN_DISABLE,
-                             .intr_type = GPIO_INTR_DISABLE};
-    ret = gpio_config(&io_conf);
-    ESP_LOGI(TAG, "gpio_config returned %s", esp_err_to_name(ret));
-
-    if (ret != ESP_OK) {
-      ESP_LOGE(TAG, "Failed to configure matrix column pin %d (GPIO%" PRIu32 "): %s", i,
-               pin_number, esp_err_to_name(ret));
-      return ret; // Return error instead of continuing
-    } else {
-      ESP_LOGI(TAG, "Matrix column pin %d configured successfully", i);
-      
-      // Verify GPIO17 configuration (UART0 RX pin - needs explicit GPIO mode)
-      if (pin_number == 17) {
-        // Explicitly set GPIO17 to GPIO INPUT mode (not UART mode)
-        // GPIO17 is UART0 RX pin on ESP32-C6 and may default to UART mode
-        // even if UART is not active. Force it to GPIO INPUT mode.
-        gpio_set_direction(GPIO_NUM_17, GPIO_MODE_INPUT);
-        gpio_set_pull_mode(GPIO_NUM_17, GPIO_PULLUP_ONLY);
-        
-        // Verify configuration
-        int test_level = gpio_get_level(GPIO_NUM_17);
-        ESP_LOGI(TAG, "🔧 GPIO17: Configured as INPUT with pull-up, initial level=%d", test_level);
-      }
-    }
-  }
-  ESP_LOGI(TAG, "DEBUG: Matrix column configuration loop completed");
-
-  ESP_LOGI(TAG, "DEBUG: Matrix column configuration loop completed");
 
   // Configure status LED pin
   // WDT reset removed during initialization // Reset before status LED config
@@ -415,33 +251,6 @@ esp_err_t chess_gpio_init(void) {
     ESP_LOGI(TAG, "Status LED configured successfully");
   }
 
-  uint32_t reset_button_pin = (uint32_t)BUTTON_RESET;
-  if (chess_gpio_pin_is_stm32_nrst_output((int)BUTTON_RESET)) {
-    ESP_LOGW(TAG,
-             "RESET_BUTTON GPIO%u je STM32 NRST (stm32_i2c_bootloader) — "
-             "the button input is not configurable (NRST only controls the bootloader)",
-             (unsigned)reset_button_pin);
-  } else {
-    uint64_t reset_button_mask = (1ULL << reset_button_pin);
-
-    ESP_LOGI(TAG, "Configuring RESET_BUTTON (GPIO%" PRIu32 ", mask=0x%llx)...",
-             reset_button_pin, reset_button_mask);
-
-    gpio_config_t reset_button_conf = {.pin_bit_mask = reset_button_mask,
-                                       .mode = GPIO_MODE_INPUT,
-                                       .pull_up_en = GPIO_PULLUP_ENABLE,
-                                       .pull_down_en = GPIO_PULLDOWN_DISABLE,
-                                       .intr_type = GPIO_INTR_DISABLE};
-    ret = gpio_config(&reset_button_conf);
-    ESP_LOGI(TAG, "gpio_config returned %s", esp_err_to_name(ret));
-
-    if (ret != ESP_OK) {
-      ESP_LOGE(TAG, "Failed to configure reset button pin (GPIO%" PRIu32 "): %s",
-               reset_button_pin, esp_err_to_name(ret));
-      return ret;
-    }
-    ESP_LOGI(TAG, "Reset button configured successfully");
-  }
 
   // ADD: Final reset
   // WDT reset removed during initialization
@@ -487,16 +296,8 @@ esp_err_t chess_squares_init(void) {
   // WDT reset for matrix initialization
   // WDT reset removed during initialization
 
-  // Matrix is already configured in GPIO init
-  // In simulation mode, we'll simulate reed switch detection
-  ESP_LOGI(TAG, "✓ Matrix system initialized");
-  ESP_LOGI(TAG, "  - 8x8 reed switch matrix");
-  ESP_LOGI(TAG, "  - Row pins: GPIO%d,%d,%d,%d,%d,%d,%d,%d", MATRIX_ROW_0,
-           MATRIX_ROW_1, MATRIX_ROW_2, MATRIX_ROW_3, MATRIX_ROW_4, MATRIX_ROW_5,
-           MATRIX_ROW_6, MATRIX_ROW_7);
-  ESP_LOGI(TAG, "  - Column pins: GPIO%d,%d,%d,%d,%d,%d,%d,%d", MATRIX_COL_0,
-           MATRIX_COL_1, MATRIX_COL_2, MATRIX_COL_3, MATRIX_COL_4, MATRIX_COL_5,
-           MATRIX_COL_6, MATRIX_COL_7);
+  ESP_LOGI(TAG, "Matrix system initialized");
+  ESP_LOGI(TAG, "  - Hall sensors over I2C");
   // ESP_LOGI(
   //     TAG,
   //     "  - Simulation mode: matrix events will be generated
@@ -511,13 +312,12 @@ esp_err_t chess_button_init(void) {
   // WDT reset for button initialization
   // WDT reset removed during initialization
 
-  // Buttons are already configured in GPIO init
-  // In simulation mode, we'll simulate button presses
-  ESP_LOGI(TAG, "✓ Button system initialized");
-  ESP_LOGI(TAG, "  - 9 buttons total");
-  ESP_LOGI(TAG, "  - Promotion buttons A: Queen, Rook, Bishop, Knight");
-  ESP_LOGI(TAG, "  - Promotion buttons B: Queen, Rook, Bishop, Knight");
-  ESP_LOGI(TAG, "  - Reset button: GPIO%d", BUTTON_RESET);
+#if CONFIG_CHESS_GESTURE_BUTTON
+  ESP_LOGI(TAG, "Button system initialized");
+  ESP_LOGI(TAG, "  - Gesture button: GPIO%d", CONFIG_CHESS_GESTURE_BUTTON_GPIO);
+#else
+  ESP_LOGI(TAG, "Button system initialized (gesture button disabled)");
+#endif
   // ESP_LOGI(
   //     TAG,
   //     "  - Simulation mode: button events will be generated
@@ -1217,9 +1017,10 @@ void chess_print_system_info(void) {
   ESP_LOGI(TAG, "Hardware Configuration:");
   ESP_LOGI(TAG, "  • LED Data Pin: GPIO%d", LED_DATA_PIN);
   ESP_LOGI(TAG, "  • Status LED: GPIO%d", STATUS_LED_PIN);
-  ESP_LOGI(TAG, "  • Reset Button: GPIO%d", BUTTON_RESET);
-  ESP_LOGI(TAG, "  • Matrix: 8x8 reed switches");
-  ESP_LOGI(TAG, "  • Buttons: 9 total (promotion + reset)");
+  ESP_LOGI(TAG, "  • Matrix: Hall I2C");
+#if CONFIG_CHESS_GESTURE_BUTTON
+  ESP_LOGI(TAG, "  • Gesture button: GPIO%d", CONFIG_CHESS_GESTURE_BUTTON_GPIO);
+#endif
   ESP_LOGI(TAG, "========================================");
   ESP_LOGI(TAG, "System Status:");
   ESP_LOGI(TAG, "  • Hardware: %s",

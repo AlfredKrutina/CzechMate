@@ -1,13 +1,12 @@
 # ESP32-C6 ↔ STM32C031 wiring (Hall V2)
 
-> **Hardware note:** This document provides reference wiring for the **CzechMate V2 hardware architecture** (new Hall sensor & STM32 co-processor board). For full V2 subsystem documentation, I2C bus constraints, and sensing principles, see [hardware/v2-hall-stm32/README.md](../../hardware/v2-hall-stm32/README.md).
+> **Hardware note:** Wiring for the Hall board and the STM32 bootloader. Sensing (occupancy, type, color) is in [rozpoznani-figur-2026-10-23.md](../firmware/rozpoznani-figur-2026-10-23.md). Versions: [HARDWARE_VERSIONS.md](HARDWARE_VERSIONS.md).
 
 Reference wiring for the **Hall V2** profile (`sdkconfig.defaults.hall_v2`) and auto-flash of STM from ESP on first boot.
 
 > For the real `czechmate_CH224A` PCB the KiCad schematic uses different pins
 > (`SDA=GPIO10`, `SCL=GPIO11`, `BOOT0=GPIO18`, `NRST=GPIO1..4`). Use
-> `sdkconfig.defaults.hall_pcb` for that board; see
-> [hardware/v2-hall-stm32/README.md](../../hardware/v2-hall-stm32/README.md).
+> `sdkconfig.defaults.hall_pcb` for that board.
 
 ## Topology
 
@@ -46,16 +45,16 @@ See also [HARDWARE_VERSIONS.md](HARDWARE_VERSIONS.md) (V2 Hall geometry).
 
 ## Pin conflicts on V1 (reed) board
 
-On **V1** prototype GPIO **10** and **11** are reed matrix rows. Profile `hall_v2` uses **GPIO 12/13** so Hall can be debugged on a separate test board without remapping all of V1.
+On the old reed board GPIO **10** and **11** were matrix rows. That scan is archived. Profile `hall_v2` uses **GPIO 12/13** for I2C.
 
-GPIO **15** on V1 is also the reset button — with `CHESS_STM32_I2C_BL_ENABLE` firmware **ignores** the button on that pin (NRST is driven by the bootloader).
+GPIO **15** in `hall_v2` is STM32 NRST. The live image does not scan a reset button on that pin. The Hall PCB gesture switch is GPIO23 (`sdkconfig.defaults.hall_pcb`).
 
 ## Manufacturing flow (virgin STM)
 
 1. Build STM firmware: `make -C firmware/stm32_hall_c031 copy-embedded` (or `demo-embedded` without HW).
 2. Flash ESP including `stm32_fw` partition: `idf.py -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.defaults.hall_v2" build flash`
 3. First ESP boot:
-   - `matrix_task` initializes I2C
+   - `squares_task` initializes Hall I2C (`hall_i2c_squares_init`)
    - `STM32_AUTO` uploads binary from `stm32_fw` partition (BOOT0 HIGH → erase → write → GO)
    - If GO fails: **NRST pulse with BOOT0 LOW** (start app from flash)
    - `STM32_I2C_BL: [hall_probe] seg0 addr 0x30 OK` confirms running application

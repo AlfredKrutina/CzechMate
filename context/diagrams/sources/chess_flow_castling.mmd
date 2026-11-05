@@ -1,4 +1,9 @@
-%% Castling — two-phase move on the physical board game_task.c
+%% Old king-then-rook drawing. The SVG rendered from it is the same picture.
+%% Hall sensor events return from game_process_drop_command() into
+%% game_hall_position.c. Both orders are there (try_castle_partial and
+%% commit_rook_as_castle). The commit calls game_board_on_drop_squares().
+%% hall_rook_park_square in game_physical.c is not on that path.
+%% game_process_castle_command() has no caller. The queue has no GCMD_CASTLE.
 %%{init: {'theme':'dark','themeVariables':{'fontFamily':'system-ui,sans-serif','clusterBkg':'#0f172a','clusterBorder':'#334155','lineColor':'#94a3b8','primaryTextColor':'#f1f5f9','edgeLabelBackground':'#1e293b','titleColor':'#f8fafc'}}}%%
 flowchart TD
   A[King move by 2 squares e→g / e→c] --> B[game_validate_castling — king/rook · empty path · king not in check · path squares not attacked]

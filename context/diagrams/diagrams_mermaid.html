@@ -247,6 +247,7 @@
 </nav>
         <main class="content">
 <h1>CZECHMATE firmware — sequence diagrams</h1>
+<p>These pictures still name <code>matrix_task</code> and the reed multiplex. The firmware task is <code>squares_task</code> (Hall I2C). The reed path is archived in <code>kos/v1-reed</code>.</p>
 <p class="intro">Sequences from <code>mermaid_diagrams.txt</code> (the source is not a single Mermaid block — for mermaid.live use <code>extracted/*.mmd</code> after <code>python generate_mermaid_html.py --export-dir context/diagrams/extracted</code>). Task diagrams: <a href="README.md">README.md</a>. Firmware version: root <code>CMakeLists.txt</code>.</p>
 <section id="section-a" class="section">
   <h2>A. SYSTEM OVERVIEW</h2>
@@ -638,10 +639,6 @@ sequenceDiagram
             GT-&gt;&gt;GT: game_process_timer_command() - game_handle_time_expiration()
             GT-&gt;&gt;GT: current_result_type = RESULT_WHITE_WINS / RESULT_BLACK_WINS
             GT-&gt;&gt;L: start_endgame_animation()
-        else GAME_CMD_CASTLE (21)
-            GT-&gt;&gt;GT: game_process_castle_command() - Castling
-        else GAME_CMD_PROMOTE (22)
-            GT-&gt;&gt;GT: game_process_promote_command() - Promotion
         else Unknown command
             GT-&gt;&gt;GT: ESP_LOGW() - Unknown command type
         end
@@ -821,7 +818,7 @@ sequenceDiagram
 
     Note over M: Scan 8x8 matrix via FreeRTOS timer&lt;br/&gt;Detect Reed Switches via time-multiplexing
     
-    M-&gt;&gt;M: matrix_scan_all() - Scan all rows with mutex protection, debounce (3x scan)
+    M-&gt;&gt;M: squares_scan_all() - Hall I2C. Lift after 2 vacant scans, occupancy after 4. Not a 3-scan reed debounce
     M-&gt;&gt;M: matrix_detect_moves() - Detect changes, piece_lifted detected (e2)
     M-&gt;&gt;GQ: xQueueSend(GAME_CMD_PICKUP) from: e2
     activate GQ
@@ -1352,7 +1349,7 @@ sequenceDiagram
         end
     end
     
-    Note over MT: Debouncing: Each sensor must be stable 3x in a row before change detection&lt;br/&gt;Move detection: piece_lifted → piece_placed → GAME_CMD_PICKUP/DROP via game_command_queue
+    Note over MT: Lift confirms after 2 vacant scans. Occupancy after 4. Not 3-in-a-row reed debounce.&lt;br/&gt;Move detection: piece_lifted → piece_placed → pickup/drop on game_command_queue
 
 # -----------------------------------------------------------------------------
     </div>

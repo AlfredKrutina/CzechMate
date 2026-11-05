@@ -1537,10 +1537,6 @@ esp_err_t hall_i2c_squares_probe_segment(uint8_t segment_0_to_3, int timeout_ms)
              esp_err_to_name(err));
   }
   return err;
-#else
-  (void)segment_0_to_3;
-  (void)timeout_ms;
-  return ESP_ERR_NOT_SUPPORTED;
 #endif
 }
 
@@ -2044,56 +2040,6 @@ void hall_i2c_squares_corner_probe(void) {
   ESP_LOGW(TAG, "ROHY hotovo. Podle radku ROH = seg/field se opravi mapa.");
 }
 
-#else /* !CONFIG_CHESS_MATRIX_INPUT_I2C_HALL */
-
-esp_err_t hall_i2c_squares_init(void) { return ESP_OK; }
-
-esp_err_t hall_i2c_squares_probe_segment(uint8_t segment_0_to_3, int timeout_ms) {
-  (void)segment_0_to_3;
-  (void)timeout_ms;
-  return ESP_ERR_NOT_SUPPORTED;
-}
-
-void hall_i2c_squares_fill_state(uint8_t squares_state[64]) {
-  if (squares_state) {
-    memset(squares_state, 0, 64);
-  }
-}
-
-void hall_i2c_squares_prepare_scan(void) {}
-
-void hall_i2c_squares_publish_scan(uint8_t squares_state[64]) {
-  (void)squares_state;
-}
-
-unsigned hall_i2c_squares_segment_count(void) { return 0; }
-
-void hall_i2c_squares_corner_probe(void) {}
-
-void hall_i2c_squares_debug_light_pieces(void) {}
-void hall_i2c_squares_request_rest_measure(void) {}
-
-esp_err_t hall_i2c_squares_read_segment_raw(uint8_t segment_0_to_3,
-                                            uint8_t *addr_out,
-                                            uint16_t raw[32]) {
-  (void)segment_0_to_3;
-  (void)raw;
-  if (addr_out != NULL) {
-    *addr_out = 0;
-  }
-  return ESP_ERR_NOT_SUPPORTED;
-}
-
-bool hall_i2c_squares_readings_usable(void) { return true; }
-
-bool hall_i2c_squares_segments_ok(void) { return true; }
-
-void hall_i2c_squares_set_logical_empty(const uint8_t empty_squares[64],
-                                        const uint8_t piece_types[64]) {
-  (void)empty_squares;
-  (void)piece_types;
-}
-
 #endif
 
 /* ========================================================================
@@ -2128,8 +2074,6 @@ bool hall_i2c_squares_identity_settled(uint8_t square) {
   }
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
   return s_poc_state[square].identity_settled;
-#else
-  return false;
 #endif
 }
 
@@ -2139,8 +2083,6 @@ hall_piece_type_t hall_i2c_squares_get_piece_type(uint8_t square) {
   }
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
   return s_poc_state[square].current_piece;
-#else
-  return HALL_PIECE_TYPE_NONE;
 #endif
 }
 
@@ -2158,9 +2100,6 @@ bool hall_i2c_squares_get_reading(uint8_t square, hall_square_reading_t *out) {
   out->occupied = st->occupied ? 1u : 0u;
   out->valid = st->live_valid ? 1u : 0u;
   return true;
-#else
-  (void)out;
-  return false;
 #endif
 }
 
@@ -2170,8 +2109,6 @@ hall_piece_color_t hall_i2c_squares_get_piece_color(uint8_t square) {
   }
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
   return s_poc_state[square].current_color;
-#else
-  return HALL_PIECE_COLOR_NONE;
 #endif
 }
 
@@ -2179,10 +2116,6 @@ void hall_i2c_squares_note_confirmed(uint8_t square, hall_piece_type_t type,
                                     hall_piece_color_t color) {
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
   hall_gain_note(square, type, color);
-#else
-  (void)square;
-  (void)type;
-  (void)color;
 #endif
 }
 
@@ -2194,8 +2127,6 @@ static void hall_mag_light_locked(void) {
   uint8_t led = chess_pos_to_led_index((uint8_t)(s_mag_sq / 8u),
                                        (uint8_t)(s_mag_sq % 8u));
   led_set_pixel_safe(led, 0, 180, 0);
-#else
-  return;
 #endif
 }
 
@@ -2217,9 +2148,6 @@ bool hall_magnet_bench_start(uint8_t square) {
     s_mag_freeze_sq = -1;
   }
   return true;
-#else
-  (void)square;
-  return false;
 #endif
 }
 
@@ -2243,23 +2171,16 @@ void hall_magnet_bench_stop(void) {
 bool hall_magnet_bench_active(void) {
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
   return s_mag_on;
-#else
-  return false;
 #endif
 }
 
 uint8_t hall_magnet_bench_square(void) {
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
   return s_mag_on ? s_mag_sq : 255;
-#else
-  return 255;
 #endif
 }
 
 void hall_magnet_bench_capture(void) {
-#if !CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
-  return;
-#else
   if (!s_mag_on) {
     return;
   }
@@ -2296,5 +2217,4 @@ void hall_magnet_bench_capture(void) {
   printf("%ld %ld %ld\n", (long)st->live_energy, (long)st->live_dev0,
          (long)st->live_dev1);
   fflush(stdout);
-#endif
 }

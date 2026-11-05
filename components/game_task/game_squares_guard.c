@@ -115,9 +115,6 @@ static bool game_squares_sensor_matches_engine(uint8_t square,
   piece_t piece = game_get_piece(square / 8, square % 8);
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
   return game_hall_square_agrees_with_logic(square, piece, phys[square]);
-#else
-  uint8_t expected_occ = (piece == PIECE_EMPTY) ? 0 : 1;
-  return phys[square] == expected_occ;
 #endif
 }
 
@@ -200,46 +197,6 @@ void game_squares_guard_render_leds(void) {
    * those homes instead, and only before the first move. */
   game_hall_restore_guide_sync();
   return;
-#else
-  game_led_clear_board();
-  uint8_t phys[64] = {0};
-  squares_get_state(phys);
-
-  bool any_piece = false;
-  for (uint8_t i = 0; i < 64; i++) {
-    if (phys[i] != 0) {
-      any_piece = true;
-      break;
-    }
-  }
-  if (!any_piece) {
-    return;
-  }
-
-  for (uint8_t square = 0; square < 64; square++) {
-    uint8_t row = square / 8;
-    uint8_t col = square % 8;
-    piece_t piece = game_get_piece(row, col);
-    if (game_squares_sensor_matches_engine(square, phys)) {
-      continue;
-    }
-
-    if (piece >= PIECE_WHITE_PAWN && piece <= PIECE_WHITE_KING) {
-      if (game_policy_mg_led_white_yellow()) {
-        game_led_frame_sq(row, col, 255, 255, 0);
-      }
-    } else if (piece >= PIECE_BLACK_PAWN && piece <= PIECE_BLACK_KING) {
-      if (game_policy_mg_led_black_blue()) {
-        game_led_frame_sq(row, col, 0, 0, 255);
-      }
-    } else if (phys[square] != 0) {
-      if (game_policy_mg_led_ghost_orange()) {
-        game_led_frame_sq(row, col, 255, 140, 0);
-      }
-    } else if (game_policy_mg_led_missing_white()) {
-      game_led_frame_sq(row, col, 220, 220, 220);
-    }
-  }
 #endif
 }
 

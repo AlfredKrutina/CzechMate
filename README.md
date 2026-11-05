@@ -2,9 +2,9 @@
 
 **Product site:** [alfredkrutina.github.io/CzechMate/downloads.html](https://alfredkrutina.github.io/CzechMate/downloads.html)
 
-Smart physical chess — real pieces, lights on the squares, and an app that teaches. Firmware on ESP32-C6, next-generation Hall architecture for V2, Flutter client in `flutter_czechmate/`.
+Smart physical chess — real pieces, lights on the squares, and an app that teaches. Firmware on ESP32-C6 is Hall I2C. Flutter client is in `flutter_czechmate/`.
 
-**Firmware in this repo:** **1.8.0** on prototype **V1** (reed matrix — occupied / empty). **V2** uses **Hall sensors** with differential occupancy sensing in current firmware; automated piece type and color recognition is the design goal of the new version — see [HARDWARE_VERSIONS.md](context/hardware/HARDWARE_VERSIONS.md) and [hardware/v2-hall-stm32/README.md](hardware/v2-hall-stm32/README.md).
+**Firmware in this repo:** **1.8.0**, live build is **Hall** (I2C). Occupancy, piece type, and color come from the Hall pair. The reed **V1** prototype is archived in [kos/v1-reed](kos/v1-reed) and is not linked. Sensing limits: [rozpoznani-figur-2026-10-23.md](context/firmware/rozpoznani-figur-2026-10-23.md). Wiring: [WIRING_ESP_STM4.md](context/hardware/WIRING_ESP_STM4.md).
 
 **Download the app:** same [product page](https://alfredkrutina.github.io/CzechMate/downloads.html) · binaries on [GitHub Releases](https://github.com/AlfredKrutina/CzechMate/releases/latest). **Windows:** no BLE scan — connect via Wi‑Fi URL ([docs/flutter/README.md](docs/flutter/README.md)). **iOS / iPad** support is in progress.
 
@@ -26,7 +26,7 @@ Longer notes (history, license): [PROJECT_NOTES.md](context/firmware/PROJECT_NOT
 
 | Area | What you get |
 |------|----------------|
-| Piece sensing | **V1:** 8×8 reed — occupied / empty. **V2:** Hall pairs — currently differential occupancy (occupied / empty); piece type and color decoding is the hardware design goal |
+| Piece sensing | Hall pairs over I2C. The firmware reports occupancy, piece type, and color. Limits of that recognition are in `context/firmware/rozpoznani-figur-2026-10-23.md`. Reed V1 is archived in `kos/v1-reed`. |
 | LEDs | 73× WS2812B (64 squares + 9 near the buttons) — moves, check, mate, errors, teaching animations |
 | Chess rules | Castling, en passant, promotion, check, mate |
 | Clients | Flutter app (BLE on mobile, Wi‑Fi on desktop), board web UI, UART console |
@@ -39,16 +39,13 @@ Longer notes (history, license): [PROJECT_NOTES.md](context/firmware/PROJECT_NOT
 ## Hardware
 
 Hardware documentation is split by generation:
-- **V1 (reed matrix prototype):** [hardware/v1-reed-matrix/README.md](hardware/v1-reed-matrix/README.md)
-- **V2 (Hall sensor & STM32 subsystem):** [hardware/v2-hall-stm32/README.md](hardware/v2-hall-stm32/README.md)
+- **V1 (reed matrix prototype, archived):** [kos/v1-reed/hardware/v1-reed-matrix/README.md](kos/v1-reed/hardware/v1-reed-matrix/README.md)
+- **V2 Hall board:** [WIRING_ESP_STM4.md](context/hardware/WIRING_ESP_STM4.md) and [HARDWARE_VERSIONS.md](context/hardware/HARDWARE_VERSIONS.md). There is no `hardware/v2-hall-stm32/README.md` in the tree.
 - **Comparison:** [HARDWARE_VERSIONS.md](context/hardware/HARDWARE_VERSIONS.md) · **V2 wiring:** [WIRING_ESP_STM4.md](context/hardware/WIRING_ESP_STM4.md)
 
-### V1 Prototype Overview
+### V1 pin map (archived, not initialized)
 
-- ESP32-C6 DevKit, 73× WS2812B, 8×8 reed matrix (V1)
-- 4× promotion + 1× reset, USB Serial JTAG, external 5 V for LEDs
-
-**GPIO (matches the firmware):**
+The live image does not multiplex these pins. GPIO23 is the V2 gesture button. GPIO15 is STM32 NRST on the Hall board.
 
 ```
 LED Data:        GPIO7
@@ -144,8 +141,8 @@ idf.py -p PORT monitor
 | Document | Contents |
 |----------|----------|
 | [docs/README.md](docs/README.md) | Documentation index |
-| [hardware/v1-reed-matrix/README.md](hardware/v1-reed-matrix/README.md) | V1 reed matrix hardware documentation |
-| [hardware/v2-hall-stm32/README.md](hardware/v2-hall-stm32/README.md) | V2 Hall + STM32 hardware documentation |
+| [kos/v1-reed/hardware/v1-reed-matrix/README.md](kos/v1-reed/hardware/v1-reed-matrix/README.md) | Archived V1 reed board. Not the live firmware. |
+| [context/hardware/WIRING_ESP_STM4.md](context/hardware/WIRING_ESP_STM4.md) | Hall board wiring and STM32 boot |
 | [context/diagrams/README.md](context/diagrams/README.md) | Mermaid / SVG architecture diagrams |
 | [docs/flutter/README.md](docs/flutter/README.md) | Flutter client app |
 | [context/firmware/ota_architecture.md](context/firmware/ota_architecture.md) | Firmware OTA channels |

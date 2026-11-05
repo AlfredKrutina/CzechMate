@@ -1025,9 +1025,6 @@ void game_process_pickup_command(const game_cmd_t *cmd) {
 
         // Victim stays on board[] until game_execute_move(). Hall already
         // sees the square empty; removing it here made a cancelled capture lie.
-#if !CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
-        game_hall_hand_note_captured(piece);
-#endif
 
         // Nastavit capture state
         capture_in_progress = true;
@@ -1366,9 +1363,6 @@ void game_process_pickup_command(const game_cmd_t *cmd) {
         if (game_is_valid_move(&capture_attempt) != MOVE_ERROR_NONE) {
           continue;
         }
-#if !CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
-        game_hall_hand_note_captured(held);
-#endif
         game_hall_hand_remove_at(i);
         capture_in_progress = true;
         capture_target_row = hr;
@@ -1398,19 +1392,6 @@ void game_process_pickup_command(const game_cmd_t *cmd) {
       hall_show_hand_moves();
       game_cmd_reply(
           "? Two pieces in hand. Put one down; the sensor names which one.",
-          false, (QueueHandle_t)cmd->response_queue);
-#else
-      game_led_clear_board();
-      for (int i = 0; i < game_hall_hand_count(); i++) {
-        piece_t held;
-        uint8_t hr;
-        uint8_t hc;
-        if (game_hall_hand_get(i, &held, &hr, &hc)) {
-          game_led_frame_sq(hr, hc, 255, 180, 0);
-        }
-      }
-      game_cmd_reply(
-          "? Two pieces in hand. Put one down; the board picks by the rules.",
           false, (QueueHandle_t)cmd->response_queue);
 #endif
       return;
@@ -2186,8 +2167,6 @@ void game_process_drop_command(const game_cmd_t *cmd) {
       } else {
         game_policy_highlight_movable_if_enabled();
       }
-#else
-      game_policy_highlight_movable_if_enabled();
 #endif
 
       game_cmd_reply("? Piece returned to original valid position",
@@ -2464,8 +2443,6 @@ void game_process_drop_command(const game_cmd_t *cmd) {
   if (s_hall_drop_contradicts) {
     hall_drop_ok = false;
   }
-#else
-  bool hall_drop_ok = true;
 #endif
   if (error == MOVE_ERROR_NONE && hall_drop_ok) {
     // VALID MOVE - normal processing

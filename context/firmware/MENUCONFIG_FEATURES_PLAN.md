@@ -1,7 +1,6 @@
 # Plan v2: Optional gameplay features via menuconfig
 
-**Version:** 2.0 (2026-07-10)  
-**Goal:** Toggle **individually** error handling, game lock, and colored LEDs (blue/yellow/red) via `idf.py menuconfig`, without breaking JSON API for Flutter/web.  
+**Version:** 2.0 (2026-07-10). Proposal only. Paths such as `matrix_task.c` and `game_matrix_guard.c` are the names from that date. The live scanner is `squares_task`. The guard file is `game_squares_guard.c`. `game_dispatch.c` does not call move hints after a move. `game_policy_highlight_movable_if_enabled()` is called from 16 sites (`game_physical.c` 7, `game_castling.c` 3, and one each in `game_move_exec.c`, `game_squares_guard.c`, `game_task.c`, `game_init.c`, `game_gesture.c`, `game_policy.c`). Pieces with a legal move are yellow (`255,255,0` in `game_matrix_workflow.c`). Destination squares are green, orange, or white.  
 **Pattern:** `CONFIG_CHESS_ENABLE_WEB_SERVER`, `CONFIG_CHESS_ENABLE_TEST_TASK`  
 **Related:** [MATRIX_GUARD.md](MATRIX_GUARD.md) · [CZECHMATE_INTEGRATION_CHECKLIST.md](CZECHMATE_INTEGRATION_CHECKLIST.md)
 
@@ -45,11 +44,11 @@ Example combinations:
 |----|-------|---|---|-----------|------------------|
 | **MG** | Matrix guard | `matrix_task.c` | `game_matrix_guard.c` | yellow / **blue** / orange / white | `game_matrix_guard_render_leds()` |
 | **ER** | Error recovery (illegal move) | `game_physical.c`, `game_error_recovery.c` | `error_recovery_state` | red lock + **blue** legal moves | `game_handle_invalid_move()` + **5× direct sets in `game_physical.c`** |
-| **MH** | Move hints (normal play) | — | — | **blue** legal moves, castling, promotion | `game_highlight_movable_pieces()` (~15 call sites) |
+| **MH** | Move hints (normal play) | `game_matrix_workflow.c` | `game_policy_highlight_movable_if_enabled()` | **yellow** pieces (`255,255,0`); targets green, orange, or white | 16 wrapper calls. Direct painter: `game_policy.c`, `led_task.c`. Not `game_dispatch.c` |
 | **UE** | UART error text | — | — | — (UART only) | `print_error_detail()` in `game_task.c` |
 | **VES** | Visual Error System | optional | optional | own | `components/visual_error_system/` — **mostly disconnected** |
 
-**Important:** “Blue LEDs” ≠ one thing — user may mean MG blue, ER blue, or MH blue. Kconfig **must** separate them.
+**Important:** “Blue LEDs” ≠ one thing. Movable-piece hints are yellow, not blue. Destination squares after a lift are a different painter in `game_physical.c` (green empty, orange capture, white check).
 
 ---
 
@@ -130,7 +129,7 @@ void chess_policy_highlight_movable_if_enabled(void);
 | P0 | `game_matrix_guard.c` : `game_matrix_guard_render_leds()` | Colored LEDs | V |
 | P1 | `game_matrix_guard.c` : `game_matrix_guard_try_clear_from_matrix()` | Auto-clear after align | L (conditional) |
 | P1 | `game_matrix_guard.c` : `game_matrix_guard_check_resync_after_restore()` | NVS boot resync | D |
-| P1 | `game_dispatch.c` : after move | `try_clear` + `highlight_movable` | L + MH |
+| P1 | `game_dispatch.c` : after move | proposed `try_clear` + `highlight_movable`. Not in the tree | L + MH |
 | P2 | `game_physical.c` : pickup/drop | early return when guard active | — |
 | P2 | `uart_handlers_game.c` : `GUARD_CLEAR` | force clear | always allowed (rescue) |
 | P2 | `web_handlers_game.c` : `guard_clear` | HTTP clear | always allowed |
@@ -151,16 +150,12 @@ void chess_policy_highlight_movable_if_enabled(void);
 
 ### 3.3 Move hints (MH)
 
-| Call site (sample) | Context |
+| Call site | Context |
 |-------------------|---------|
-| `game_dispatch.c` | After guard clear |
-| `game_physical.c` | After valid move (~10×) |
-| `game_castling.c` | After castling |
-| `game_promotion.c` | Blue promotion UI |
-| `led_task.c` | Calls `game_highlight_movable_pieces()` |
-| `game_error_recovery.c` | After recovery |
+| `game_policy.c` | `game_highlight_movable_pieces()` |
+| `led_task.c` | `game_highlight_movable_pieces()` |
 
-**Recommendation:** Single public entry `chess_policy_highlight_movable_if_enabled()` — internally calls `game_highlight_movable_pieces()`.
+Those are the only two calls in `components/`. The function paints the current side's pieces that have a legal move, yellow `255,255,0`. It returns immediately when a piece is already lifted.
 
 ### 3.4 Dead / duplicate code (cleanup in phase 4)
 

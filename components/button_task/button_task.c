@@ -7,30 +7,16 @@
  * WHAT DID THIS FILE DO?
  * =============================================================================
  *
- * This task processes ALL buttons:
- * 1. 4 physical promotion buttons (Queen, Rook, Bishop, Knight)
- * 2. 1 physical reset button
- * 3. 4 virtual promotion buttons (only LED indication)
- * 4. Debouncing (ignores "shaking")
- * 5. Event detection (press, release, long press, double press)
- * 6. Sending the event to the queue
- *
- * =============================================================================
- * HOW DOES IT WORK?
- * =============================================================================
- *
- * HARDWARE:
- * - 4 promotion buttons: GPIO shared with matrix cols (time-multiplexed)
- * - 1 reset button: GPIO15 (dedicated pin)
- * - 9 LED indication: LED indexes 64-72 (WS2812B)
+ * The V2 board has one gesture button. button_gesture_poll() decodes it.
+ * Promotion and reset switches from the reed matrix are archived.
+ * This task still drains button_event_queue (simulation and UART) and
+ * polls the gesture button every 5 ms.
  *
  * MAIN LOOP (5ms cycle):
  * while (1) {
- * 1. Scan all GPIO buttons
- * 2. Debounce (50ms stability required)
- * 3. Detect events (press/release/long/double)
- * 4. Send events to button_event_queue
- * 5. Wait 5ms
+ * 1. Drain button commands
+ * 2. button_gesture_poll() for the single V2 switch
+ * 3. Wait 5ms
  * }
  *
  * DEBOUNCING:
@@ -218,60 +204,8 @@ void button_scan_all(void) {
     return;
   }
 
-  // REAL HARDWARE BUTTON SCANNING
-  // Scan physical button pins and update button_states
-  //
-  // Physical buttons:
-  // - 4 promotion buttons (MATRIX_COL_0-3): button_id 0-3
-  // - 1 reset button (GPIO15): button_id 8
-  //
-  // LED indications (9 LEDs):
-  // - LED 64-67: White promotion (button_id 0-3 visual)
-  // - LED 68-71: Black promotion (button_id 4-7 visual)
-  // - LED 72: Reset (button_id 8)
-
-  for (int i = 0; i < CHESS_BUTTON_COUNT; i++) {
-    bool current_state = false;
-
-    if (i == 8) {
-#if CONFIG_CHESS_GESTURE_BUTTON
-      /* GPIO15 is the live gesture switch. A reset here clears the board
-       * before the wave or the hold preview can show. */
-      current_state = false;
-#else
-      if (chess_gpio_pin_is_stm32_nrst_output((int)BUTTON_RESET)) {
-        current_state = false;
-      } else {
-        current_state = (gpio_get_level(BUTTON_RESET) == 0);
-      }
-#endif
-
-    } else if (i >= 0 && i <= 3) {
-      // Promotion buttons (0-3): MATRIX_COL_0-3
-      // These pins are time-multiplexed with matrix columns
-      // During button scan window (20-25ms), they can be read as buttons
-      // Active low (pulled up, buttons pull to ground)
-      const gpio_num_t promotion_pins[] = {
-          BUTTON_QUEEN,  // MATRIX_COL_0
-          BUTTON_ROOK,   // MATRIX_COL_1
-          BUTTON_BISHOP, // MATRIX_COL_2
-          BUTTON_KNIGHT  // MATRIX_COL_3
-      };
-      /* On the V2 PCB these columns are NRST outputs. A low reset must not
-       * look like a promotion press. */
-      if (chess_gpio_pin_is_stm32_nrst_output((int)promotion_pins[i])) {
-        current_state = false;
-      } else {
-        current_state = (gpio_get_level(promotion_pins[i]) == 0);
-      }
-
-    } else {
-      // button_id 4-7: No physical buttons (only LED indications)
-      current_state = false;
-    }
-
-    button_states[i] = current_state;
-  }
+  /* V1 promotion columns and the GPIO15 reset switch are archived.
+   * The V2 board has one gesture button, polled by button_gesture_poll(). */
 }
 
 void button_simulate_press(uint8_t button_id) {
@@ -574,12 +508,8 @@ void button_task_start(void *pvParameters) {
   }
 
   ESP_LOGI(TAG, "Features:");
-  ESP_LOGI(TAG, "  • 9 button handling (promotion + reset)");
-  ESP_LOGI(TAG, "  • Button debouncing and event detection");
-  ESP_LOGI(TAG, "  • LED feedback for button states");
-  ESP_LOGI(TAG, "  • Long press and double press detection");
+  ESP_LOGI(TAG, "  • Gesture button (V2) and command queue");
   ESP_LOGI(TAG, "  • Simulation mode (no HW required)");
-  ESP_LOGI(TAG, "  • 5ms scan cycle");
 
   task_running = true;
 

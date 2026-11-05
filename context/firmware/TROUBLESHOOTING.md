@@ -45,17 +45,19 @@ idf.py -p /dev/ttyUSB0 monitor
 
 ## When something fails — first steps
 
-### Hardware (V1 Reed Matrix)
+### Hardware (archived V1 reed)
+
+The live image does not scan a reed matrix. This table is only for the old board. Sources: [kos/v1-reed](../../kos/v1-reed).
 
 | Problem | What to check |
 |---------|-----------------|
 | **LEDs off** | 5 V supply for the strip, common ground with ESP, data on **GPIO7** to DIN |
-| **Matrix sees nothing** | Reed wiring, pull-ups on columns (~10 kΩ), row outputs (see [hardware/v1-reed-matrix/README.md](../../hardware/v1-reed-matrix/README.md)) |
-| **Buttons** | 1N4148 diodes on all rows, polarity |
+| **Matrix sees nothing** | Reed wiring, pull-ups on columns (~10 kΩ), row outputs (see [kos/v1-reed/hardware/v1-reed-matrix/README.md](../../kos/v1-reed/hardware/v1-reed-matrix/README.md)) |
+| **Buttons** | Four promotion buttons on the matrix columns, reset on GPIO15 |
 
 ### Hardware (V2 Hall Sensors & STM32 Subsystem)
 
-Detailed V2 architecture: [hardware/v2-hall-stm32/README.md](../../hardware/v2-hall-stm32/README.md) · Wiring and bootloader details: [WIRING_ESP_STM4.md](WIRING_ESP_STM4.md).
+Detailed V2 wiring and bootloader: [WIRING_ESP_STM4.md](../hardware/WIRING_ESP_STM4.md). Piece recognition: [rozpoznani-figur-2026-10-23.md](rozpoznani-figur-2026-10-23.md).
 
 | Problem | What to check |
 |---------|-----------------|

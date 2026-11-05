@@ -298,28 +298,6 @@ static void game_physical_undo_build_target_board(piece_t target[8][8],
 static bool game_physical_undo_target_matches_hall(const piece_t target[8][8]) {
   return game_hall_positions_equal(target);
 }
-#else
-static bool game_physical_undo_target_matches_reed(const piece_t target[8][8],
-                                                   const move_undo_meta_t *meta,
-                                                   move_type_t kind) {
-  uint8_t phys[64] = {0};
-  squares_get_state(phys);
-  for (uint8_t sq = 0; sq < 64; sq++) {
-    piece_t expect = target[sq / 8][sq % 8];
-    uint8_t want_occ = (expect != PIECE_EMPTY) ? 1 : 0;
-    if (phys[sq] != want_occ) {
-      return false;
-    }
-  }
-  if (kind == MOVE_TYPE_CAPTURE || kind == MOVE_TYPE_EN_PASSANT) {
-    uint8_t sq = (uint8_t)(meta->capture_return_row * 8 + meta->capture_return_col);
-    if (phys[sq] == 0) {
-      return false;
-    }
-  }
-  (void)meta;
-  return true;
-}
 #endif
 
 bool game_physical_undo_copy_previous(piece_t dest[8][8]) {
@@ -336,9 +314,6 @@ bool game_physical_undo_copy_previous(piece_t dest[8][8]) {
 static bool game_physical_undo_physical_matches_target(void) {
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
   return game_physical_undo_target_matches_hall(s_undo.target_board);
-#else
-  return game_physical_undo_target_matches_reed(s_undo.target_board, &s_undo.meta,
-                                                s_undo.kind);
 #endif
 }
 
@@ -379,9 +354,6 @@ static void game_physical_undo_show_pending_leds(void) {
     bool ok = false;
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
     ok = game_hall_square_agrees_with_logic(sq, expect, phys[sq]);
-#else
-    bool need_piece = (expect != PIECE_EMPTY);
-    ok = (!need_piece && phys[sq] == 0) || (need_piece && phys[sq] != 0);
 #endif
     if (!ok && game_policy_error_recovery_led_red_blink()) {
       s_undo.pending_blink_phase++;
@@ -549,10 +521,6 @@ void game_physical_undo_tick(void) {
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
   /* Hall takeback is a stable previous position, not a per-tick LED redraw. */
   return;
-#else
-  if (s_undo.phase == PHYS_UNDO_PENDING) {
-    game_physical_undo_show_pending_leds();
-  }
 #endif
 }
 
@@ -635,48 +603,6 @@ bool game_physical_undo_handle_pickup(const game_cmd_t *cmd,
   (void)from_col;
   (void)piece;
   return false;
-#else
-  (void)cmd;
-
-  if (s_undo.phase != PHYS_UNDO_IDLE && !game_physical_undo_enabled()) {
-    game_physical_undo_reset();
-    return false;
-  }
-
-  if (game_physical_undo_intercept_pickup(from_row, from_col)) {
-    return true;
-  }
-
-  if (s_undo.phase == PHYS_UNDO_PENDING) {
-    game_physical_undo_try_complete_engine();
-    if (s_undo.phase == PHYS_UNDO_PENDING) {
-      game_physical_undo_show_pending_leds();
-    }
-    return true;
-  }
-
-  if (!game_physical_undo_enabled() || game_physical_undo_mode_blocks_offer()) {
-    return false;
-  }
-
-  chess_move_t m;
-  move_type_t kind;
-  move_undo_meta_t meta;
-  if (!game_physical_undo_load_last(&m, &kind, &meta)) {
-    return false;
-  }
-
-  if (!game_physical_undo_lift_matches(&m, kind, &meta, from_row, from_col,
-                                       piece)) {
-    return false;
-  }
-
-  game_physical_undo_arm_from_last(&m, kind, &meta, from_row, from_col, piece);
-  game_physical_undo_show_armed_leds();
-  ESP_LOGI(TAG, "Takeback armed: lift %c%d blue return %c%d",
-           'a' + from_col, from_row + 1, 'a' + s_undo.blue_col,
-           s_undo.blue_row + 1);
-  return true;
 #endif
 }
 
@@ -687,95 +613,5 @@ bool game_physical_undo_handle_drop(const game_cmd_t *cmd,
   (void)to_row;
   (void)to_col;
   return false;
-#else
-  (void)cmd;
-
-  if (s_undo.phase != PHYS_UNDO_IDLE && !game_physical_undo_enabled()) {
-    game_physical_undo_reset();
-    return false;
-  }
-
-  if (s_undo.phase == PHYS_UNDO_PENDING) {
-    game_physical_undo_try_complete_engine();
-    return true;
-  }
-
-  if (s_undo.phase == PHYS_UNDO_IDLE) {
-    if (!game_physical_undo_enabled() ||
-        game_physical_undo_mode_blocks_offer() || !piece_lifted) {
-      return false;
-    }
-    chess_move_t rev_m;
-    move_type_t rev_kind;
-    move_undo_meta_t rev_meta;
-    if (!game_physical_undo_drop_is_last_reverse(to_row, to_col, &rev_m,
-                                                 &rev_kind, &rev_meta)) {
-      return false;
-    }
-    game_physical_undo_arm_from_last(&rev_m, rev_kind, &rev_meta,
-                                     lifted_piece_row, lifted_piece_col,
-                                     lifted_piece);
-  }
-
-  if (s_undo.phase != PHYS_UNDO_ARMED || !piece_lifted) {
-    return false;
-  }
-
-  if (to_row == s_undo.lift_row && to_col == s_undo.lift_col) {
-    ESP_LOGI(TAG, "Takeback cancelled — piece returned to lift square");
-    game_physical_undo_reset();
-    piece_lifted = false;
-    lifted_piece = PIECE_EMPTY;
-    lifted_piece_row = 0;
-    lifted_piece_col = 0;
-    game_led_clear_board();
-    game_policy_highlight_movable_if_enabled();
-#if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
-    game_hall_restore_guide_request_sync();
-#endif
-    return true;
-  }
-
-  if (to_row == s_undo.blue_row && to_col == s_undo.blue_col) {
-    s_undo.phase = PHYS_UNDO_PENDING;
-#if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
-    game_hall_restore_guide_stop_leds();
-#endif
-    game_physical_undo_build_target_board(s_undo.target_board, &s_undo.move,
-                                          s_undo.kind, &s_undo.meta);
-    piece_lifted = false;
-    lifted_piece = PIECE_EMPTY;
-    lifted_piece_row = 0;
-    lifted_piece_col = 0;
-    s_undo.pending_blink_phase = 0;
-
-    if (s_undo.kind == MOVE_TYPE_PROMOTION && (*game_state_promotion_state()).pending) {
-      if (xSemaphoreTakeRecursive((*game_state_promotion_mutex()), pdMS_TO_TICKS(100)) ==
-          pdTRUE) {
-        (*game_state_promotion_state()).pending = false;
-        (*game_state_promotion_state()).square_row = 0;
-        (*game_state_promotion_state()).square_col = 0;
-        xSemaphoreGiveRecursive((*game_state_promotion_mutex()));
-      }
-    }
-
-    ESP_LOGI(TAG, "Takeback pending — restore all pieces before engine rewind");
-    game_physical_undo_show_pending_leds();
-    game_physical_undo_try_complete_engine();
-    return true;
-  }
-
-  ESP_LOGI(TAG, "Takeback held — %c%d is not the previous square",
-           'a' + to_col, to_row + 1);
-  s_undo.stray_valid = true;
-  s_undo.stray_row = to_row;
-  s_undo.stray_col = to_col;
-  piece_lifted = false;
-  lifted_piece = PIECE_EMPTY;
-  lifted_piece_row = 0;
-  lifted_piece_col = 0;
-  game_physical_undo_show_armed_leds();
-  game_led_frame_sq(to_row, to_col, 255, 0, 0);
-  return true;
 #endif
 }

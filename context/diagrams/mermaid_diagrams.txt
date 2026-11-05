@@ -1,4 +1,6 @@
 # Mermaid Sequence Diagrams for CZECHMATE (firmware per main.c + freertos_chess.h)
+# The sequences below still say matrix_task and the reed multiplex.
+# The live task is squares_task (Hall I2C). Reed is in kos/v1-reed.
 # Overview graphs + current tasks: context/diagrams/README.md
 #
 # IMPORTANT — this file is NOT one Mermaid diagram (# comments + 26× sequenceDiagram).
@@ -413,10 +415,6 @@ sequenceDiagram
             GT->>GT: game_process_timer_command() - game_handle_time_expiration()
             GT->>GT: current_result_type = RESULT_WHITE_WINS / RESULT_BLACK_WINS
             GT->>L: start_endgame_animation()
-        else GAME_CMD_CASTLE (21)
-            GT->>GT: game_process_castle_command() - Castling
-        else GAME_CMD_PROMOTE (22)
-            GT->>GT: game_process_promote_command() - Promotion
         else Unknown command
             GT->>GT: ESP_LOGW() - Unknown command type
         end
@@ -590,25 +588,24 @@ sequenceDiagram
     participant G as gameTask
     participant L as ledTask
 
-    Note over M: Scan 8x8 matrix via FreeRTOS timer<br/>Detect Reed Switches via time-multiplexing
+    Note over M: Hall I2C scan in squares_task. Lift publishes after 2 vacant scans. Occupancy publishes after 4 scans at HALL_REOCCUPY_ENERGY.
     
-    M->>M: matrix_scan_all() - Scan all rows with mutex protection, debounce (3x scan)
-    M->>M: matrix_detect_moves() - Detect changes, piece_lifted detected (e2)
-    M->>GQ: xQueueSend(GAME_CMD_PICKUP) from: e2
+    M->>M: squares_scan_all() - not a reed row scan, and not a 3-scan debounce
+    M->>M: squares_hall_publish_changes() - one edge, GCMD_BOARD_LIFT (no 3× reed debounce)
+    M->>GQ: GCMD_BOARD_LIFT from: e2
     activate GQ
     G->>GQ: xQueueReceive() - process commands from FIFO queue
     deactivate GQ
     
     Note over G: game_process_commands() - game_process_pickup_command() - Validate piece
     G->>G: Check if move is possible - game_get_available_moves()
-    G->>L: led_set_pixel_safe() - Highlight source (yellow) - DIRECT CALL with led_mutex
-    G->>L: led_set_pixel_safe() - Show valid moves (green)
+    G->>L: game_event_post_* - movable pieces yellow, empty target green, capture orange, check white
     
     Note over L: LED batch update system - led_commit_pending_changes()<br/>WS2812B refresh (33ms cycle)
     
     M->>M: matrix_scan_all() - Next scan (time-multiplexing: 20ms matrix, 5ms buttons)
-    M->>M: matrix_detect_moves() - piece_placed detected (e4)
-    M->>GQ: xQueueSend(GAME_CMD_DROP) from: e2, to: e4
+    M->>M: squares_hall_publish_changes() - GCMD_BOARD_DROP, has_from = 0
+    M->>GQ: GCMD_BOARD_DROP to: e4, has_from = 0
     activate GQ
     G->>GQ: xQueueReceive() - process DROP command
     deactivate GQ
@@ -773,8 +770,13 @@ sequenceDiagram
 # -----------------------------------------------------------------------------
 # E2. Castling flow (two-phase)
 # -----------------------------------------------------------------------------
-# Complete castling flow: king move detection, waiting for rook, validation,
-# castling completion.
+# Hall sensor events do not run the castling code later in game_physical.c.
+# game_process_drop_command() returns into game_hall_position.c.
+# Both orders live there: try_castle / try_castle_partial, and rook-first
+# via commit_rook_as_castle(). The committed move goes through
+# game_board_on_drop_squares() (WAIT_ROOK after the king step).
+# game_process_castle_command() has no caller. There is no GCMD_CASTLE.
+# The sequence below is the old king-then-rook drawing. The SVG matches it.
 
 sequenceDiagram
     participant M as matrixTask
@@ -1109,7 +1111,7 @@ sequenceDiagram
         end
     end
     
-    Note over MT: Debouncing: Each sensor must be stable 3x in a row before change detection<br/>Move detection: piece_lifted → piece_placed → GAME_CMD_PICKUP/DROP via game_command_queue
+    Note over MT: Lift confirms after 2 vacant scans (HALL_LIFT_CONFIRM_SCANS). Occupancy after 4 scans (HALL_REOCCUPY_SCANS). Not 3-in-a-row reed debounce.<br/>Move detection: piece_lifted → piece_placed → pickup/drop on game_command_queue
 
 # -----------------------------------------------------------------------------
 # H3. Button task detail

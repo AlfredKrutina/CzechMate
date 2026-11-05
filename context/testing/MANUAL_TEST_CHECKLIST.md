@@ -219,9 +219,26 @@ Wiring: [WIRING_ESP_STM4.md](../hardware/WIRING_ESP_STM4.md)
 
 ---
 
+## I — Hall castling and takeback
+
+Hall events do not use the king-then-rook path left in `game_physical.c`. Expect both orders on short and long castling.
+
+| # | Steps | Expected result |
+|---|--------|-----------|
+| I1 | King two squares, then the rook onto its castle square | One castle in the history. Both pieces sit on the castle squares |
+| I2 | Rook onto its castle square first, then the king | Same castle. The rook-first guide must not commit a plain rook move |
+| I3 | Repeat I1 for the other wing | Queen-side castle, both pieces on the castle squares |
+| I4 | After I1, hold the pieces back on the squares they left | Takeback restores the position and the castling rights |
+| I5 | After I2, same return | Takeback of a rook-first castle does the same |
+
+`tests/host/chess_core_host_test.c` only checks that white O-O is legal in the core and that white O-O-O is refused while the knight still sits on b1. It does not cover flag sync, undo, or the Hall flow.
+
+---
+
 ## Automated supplements (CI)
 
 - `openings-catalog.yml` — 41 lines, UCI, mirror-symmetric, sync
 - `flutter-test.yml` — catalog, progress, curriculum, UX, release gate
 - `firmware-build.yml` — full HTTP + BLE-only + gameplay-lite + gameplay-dev + hall-v2 profiles
+- `tests/host/chess_core_host_test.c` — core O-O apply and blocked O-O-O only. No Hall castling, no undo, no rights sync
 - `scripts/test_opening_api.sh` — HTTP smoke on the board

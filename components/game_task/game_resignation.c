@@ -52,42 +52,6 @@ king_resignation_state_t *game_state_resignation_state(void) { return &s_resigna
  * 4-5s: buttons turn solid orange.
  * 5-9s: fade in LED order (Queen → Rook → Bishop → Knight on both sides).
  */
-#if !CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
-/* Promotion-button countdown. Hall boards have no such LEDs; the ring
- * is started from resignation_tick instead. */
-static void resignation_update_button_leds(uint32_t elapsed_ms) {
-  const uint32_t ORANGE_START_MS = 4000; // Color to orange up to 4 s
-  if (elapsed_ms < ORANGE_START_MS)
-    return;
-
-  const uint8_t WHITE_BASE = 64;
-  const uint8_t BLACK_BASE = 68;
-
-  const uint32_t FADE_START_MS = 5000;
-  const uint32_t FADE_DURATION_MS = 1000;
-  const uint32_t LED_OFFSET_MS = 1000;
-
-  for (int i = 0; i < 4; i++) {
-    uint32_t led_start_time = FADE_START_MS + (i * LED_OFFSET_MS);
-    uint8_t brightness = 255;
-
-    if (elapsed_ms >= led_start_time) {
-      uint32_t led_elapsed = elapsed_ms - led_start_time;
-      if (led_elapsed >= FADE_DURATION_MS) {
-        brightness = 0;
-      } else {
-        brightness = 255 - (led_elapsed * 255 / FADE_DURATION_MS);
-      }
-    }
-
-    uint8_t r = brightness;
-    uint8_t g = brightness / 2;
-    uint8_t b = 0;
-    button_set_led_color(WHITE_BASE + i, r, g, b);
-    button_set_led_color(BLACK_BASE + i, r, g, b);
-  }
-}
-#endif
 
 /**
  * @brief End the game by resignation of @p loser (runs in game_task context).
@@ -124,13 +88,6 @@ static void resignation_end_game(player_t loser) {
     // Finalized cleanup (no cancel messages, do not restore king)
     resignation_stop(true);
   }
-#if !CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
-  else {
-    for (int i = 0; i < 8; i++) {
-      button_set_led_color(64 + i, 0, 0, 0);
-    }
-  }
-#endif
   game_snapshot_persist_after_valid_move();
 }
 
@@ -243,8 +200,6 @@ void resignation_tick(void) {
                              resignation_state.player == PLAYER_WHITE, 0);
     game_cmd_reply("Hold the king to resign.", false, NULL);
   }
-#else
-  resignation_update_button_leds(elapsed_ms);
 #endif
 
   // Finalize after 10 seconds
@@ -280,12 +235,6 @@ void resignation_start(player_t player, uint8_t row, uint8_t col) {
   ESP_LOGI(TAG, "✅ King lift tracked for resignation at [%d][%d] (legal board unchanged)",
            row, col);
 
-#if !CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
-  /* Reed boards mark the king square. On Hall this one pixel is flushed
-   * next loop as a full picture and wipes the legal-move hints, including
-   * the castling square. */
-  game_led_frame_sq(row, col, 255, 128, 0);
-#endif
 
   // Buttons turn orange only after 4s (in resignation_update_button_leds)
   // – the first 4 seconds remain in the original color
@@ -321,10 +270,6 @@ void resignation_stop(bool finalize) {
              "✅ Resignation cancelled at [%d][%d] (legal board unchanged)",
              resignation_state.king_row, resignation_state.king_col);
     game_event_post_led_ctrl(GAME_EVT_CTRL_RESIGN_CANCEL, 0, 0, 0, 0);
-#if !CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
-    game_led_frame_sq(resignation_state.king_row,
-                                              resignation_state.king_col, 0, 0, 0);
-#endif
   } else {
     game_event_post_led_ctrl(GAME_EVT_CTRL_RESIGN_STOP, 0, 0, 0, 0);
   }

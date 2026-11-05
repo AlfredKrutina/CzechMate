@@ -50,32 +50,13 @@ The GPIO scan loop is coordinated by FreeRTOS timers and tasks:
 
 ---
 
-## 4. Firmware Implementation
+## 4. Firmware
 
-All code required to build and operate the V1 prototype is included in the default firmware build:
+Reed sources are archived under `kos/v1-reed/firmware/` and are not compiled. The live default (`sdkconfig.defaults`) is Hall I2C. Do not expect `idf.py build` to produce a reed image.
 
-- **Build configuration:** `sdkconfig.defaults` (sets `CONFIG_CHESS_MATRIX_INPUT_GPIO_REED=y`).
-- **Matrix driver:** `components/matrix_task/matrix_task.c` and `components/matrix_task/include/matrix_task.h`.
-- **GPIO definitions & initialization:** `components/freertos_chess/freertos_chess.c` and `components/freertos_chess/include/freertos_chess.h`.
-- **LED index mapping:** `components/freertos_chess/led_mapping.c` (converts row/column chessboard coordinates to serpentine WS2812B chain indices).
-- **Game logic & state tracking:** `components/game_task/game_task.c` (consumes pickup/drop commands, validates moves, tracks piece identities).
+## 5. Building V1
 
----
-
-## 5. Building and Flashing V1 Firmware
-
-To build the default V1 firmware running on physical prototype boards:
-
-```bash
-# Set up ESP-IDF environment (v5.x recommended)
-. $IDF_PATH/export.sh
-
-# Build project with default configuration
-idf.py build
-
-# Flash to connected ESP32-C6 and open serial monitor
-idf.py -p PORT flash monitor
-```
+There is no reed Kconfig option in the live tree. The snapshot in `firmware/` is the code as it was before that option was removed.
 
 ---
 

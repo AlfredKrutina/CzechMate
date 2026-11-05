@@ -394,8 +394,6 @@ void game_snapshot_publish_hall_empty(void) {
     empty[i] = (t == 0) ? 1u : 0u;
   }
   hall_i2c_squares_set_logical_empty(empty, types);
-#else
-  (void)0;
 #endif
 }
 
@@ -882,8 +880,6 @@ void game_snapshot_persist_after_valid_move(void) {
 bool game_snapshot_sensors_ready(void) {
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
   return hall_i2c_squares_readings_usable();
-#else
-  return true;
 #endif
 }
 

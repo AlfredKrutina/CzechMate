@@ -2043,10 +2043,6 @@ void game_task_start(void *pvParameters) {
         // Hall starts the clock when the opening guide hands over.
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
         game_hall_opening_clock_on_play();
-#else
-        if (game_is_timer_active()) {
-          game_start_timer_move(true);
-        }
 #endif
         
         // Highlight moving figures
@@ -2072,8 +2068,6 @@ void game_task_start(void *pvParameters) {
           } else {
             game_show_missing_pieces_led();
           }
-#else
-          game_show_missing_pieces_led();
 #endif
           last_led_update = now;
         }

@@ -132,16 +132,11 @@ CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
 CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
 CONFIG_APP_ROLLBACK_ENABLE=y
 
-# --- Matrix input (build-time choice) ---
-# Reed: matrix_scan_all() does GPIO multiplex 8×8 (see matrix_task.c + MATRIX_* in freertos_chess.h).
-# Hall: hall_i2c_matrix_fill_state() reads 4× STM over I2C (hall_i2c_spec.h).
-#
-# To restore “STM flash over I2C at runtime”:
-# - idf.py -B build-hall-v2 -D SDKCONFIG=sdkconfig.hall_v2 -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.defaults.hall_v2" build flash
-# - menuconfig: CHESS_MATRIX_INPUT_I2C_HALL + CHESS_STM32_I2C_BL_ENABLE (+ often CHESS_STM32_BL_SHARE_I2C_HALL=y).
-# - Wiring: docs/reference/WIRING_ESP_STM4.md
-CONFIG_CHESS_MATRIX_INPUT_GPIO_REED=y
-# CONFIG_CHESS_MATRIX_INPUT_I2C_HALL is not set
+# --- Matrix input ---
+# Hall I2C is the only sensing backend. Reed multiplex is in kos/v1-reed/firmware.
+# STM32 flash profile: sdkconfig.defaults.hall_v2 (pins, auto-flash).
+# Gesture button for the hall PCB: sdkconfig.defaults.hall_pcb (GPIO23).
+CONFIG_CHESS_MATRIX_INPUT_I2C_HALL=y
 
-# STM32 ROM bootloader (AN4221) — disabled in the reed profile due to the pin clash above.
+# STM32 ROM bootloader (AN4221). Pin map is in sdkconfig.defaults.hall_v2.
 # CONFIG_CHESS_STM32_I2C_BL_ENABLE is not set

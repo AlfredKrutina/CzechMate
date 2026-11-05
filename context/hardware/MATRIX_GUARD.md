@@ -17,7 +17,7 @@ Matrix guard pauses the game when the sensor matrix and logical `board[]` disagr
 
 1. Align **all** pieces per the LEDs (not just the last move).
 2. Leave the board quiet for ~2 s (no more lifts).
-3. Play resumes automatically — both layers (`matrix_task` + `game_task`) clear together.
+3. Play resumes automatically — `squares_task` and `game_task` clear together.
 
 ## If it still fails
 

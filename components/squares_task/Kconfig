@@ -1,19 +1,11 @@
 menu "Chess matrix input"
 
-    choice CHESS_MATRIX_INPUT
-        prompt "Matrix sensing backend"
-        default CHESS_MATRIX_INPUT_GPIO_REED
+    config CHESS_MATRIX_INPUT_I2C_HALL
+        bool
+        default y
         help
-            GPIO reed: classic row/column multiplex.
             I2C Hall: reading raw channels from 4× STM32 (32× uint16 / segment),
-            channels 2k and 2k+1 = one field.
-
-        config CHESS_MATRIX_INPUT_GPIO_REED
-            bool "GPIO reed matrix (multiplex rows/cols)"
-
-        config CHESS_MATRIX_INPUT_I2C_HALL
-            bool "I2C Hall segments (STM32)"
-    endchoice
+            channels 2k and 2k+1 = one field. Reed multiplex is archived.
 
     menu "I2C Hall (STM32)"
         depends on CHESS_MATRIX_INPUT_I2C_HALL

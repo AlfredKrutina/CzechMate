@@ -1,4 +1,5 @@
 # Comprehensive Mermaid Sequence Diagram — main loop (single page)
+# Names matrix_task. The live scanner is squares_task (Hall I2C).
 # Current task overview and smaller diagrams: README.md in this folder
 # Copy to https://mermaid.live/ for visualization
 #

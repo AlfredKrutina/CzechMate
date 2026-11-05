@@ -312,11 +312,6 @@ static void puzzle_restore_after_wrong(void) {
   if (!game_hall_restore_guide_is_active()) {
     puzzle_show_current_ply();
   }
-#else
-  uint8_t exp[64];
-  puzzle_expected_occupancy_from_logic(exp);
-  (void)puzzle_paint_target(exp);
-  puzzle_show_current_ply();
 #endif
 }
 
@@ -352,8 +347,6 @@ static bool puzzle_square_disagrees(uint8_t index, uint8_t want_occ,
       return true;
     }
   }
-#else
-  (void)want_occ;
 #endif
   return false;
 }
@@ -489,12 +482,6 @@ static void puzzle_enter_setup_shell(void) {
 static bool puzzle_setup_guide(void) {
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
   return game_hall_restore_guide_show_target();
-#else
-  uint8_t exp[64];
-  if (!game_fen_expected_occupancy_64(puzzle_fen, exp)) {
-    return false;
-  }
-  return puzzle_paint_target(exp);
 #endif
 }
 
@@ -621,10 +608,6 @@ bool game_puzzle_try_start_staged(void) {
   if (puzzle_sync_hold) {
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
     (void)game_hall_restore_guide_show_play();
-#else
-    uint8_t exp[64];
-    puzzle_expected_occupancy_from_logic(exp);
-    puzzle_paint_target(exp);
 #endif
     STAGING_LOGI(TAG, "puzzle: started but sensor hold session=%u",
                  (unsigned)puzzle_session);
@@ -832,10 +815,6 @@ void game_puzzle_service_leds(void) {
   if (!match) {
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
     (void)game_hall_restore_guide_show_play();
-#else
-    uint8_t exp[64];
-    puzzle_expected_occupancy_from_logic(exp);
-    puzzle_paint_target(exp);
 #endif
     if (!puzzle_sync_hold) {
       puzzle_sync_hold = true;
@@ -1021,7 +1000,5 @@ void game_puzzle_service_hall_move(void) {
     board_machine_reset(game_board_machine());
   }
   game_cmd_reply("Puzzle move accepted.", false, NULL);
-#else
-  (void)0;
 #endif
 }

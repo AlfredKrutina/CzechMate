@@ -383,65 +383,6 @@ bool game_execute_move(const chess_move_t *move) {
         game_snapshot_persist_after_valid_move();
         return success;
       }
-#else
-      if (game_get_piece(castling_state.rook_from_row,
-                         castling_state.rook_from_col) == PIECE_EMPTY &&
-          game_get_piece(castling_state.rook_to_row,
-                         castling_state.rook_to_col) != PIECE_EMPTY) {
-        game_set_piece(castling_state.rook_from_row,
-                       castling_state.rook_from_col,
-                       game_get_piece(castling_state.rook_to_row,
-                                        castling_state.rook_to_col));
-        game_set_piece(castling_state.rook_to_row, castling_state.rook_to_col,
-                       PIECE_EMPTY);
-      }
-      current_player = castling_state.player;
-      // Show LED indication for tower with pulsation for better visibility
-      game_led_clear_board();
-
-      uint8_t rook_from_led = chess_pos_to_led_index(
-          castling_state.rook_from_row, castling_state.rook_from_col);
-      uint8_t rook_to_led = chess_pos_to_led_index(castling_state.rook_to_row,
-                                                   castling_state.rook_to_col);
-
-      // Pulsing for better visibility (3 cycles with a smooth transition)
-      // Use the correct brightness calculation for smooth pulsing
-      for (int pulse = 0; pulse < 3; pulse++) {
-        // Smooth pulsation: 0.5 -> 1.0 -> 0.5
-        // Use sin() with normalization - sin() returns -1 to 1, we normalize to
-        // 0-1, pak na 0.5-1.0
-        float phase = (float)pulse * 2.0f * 3.14159f / 3.0f; // 0, 2π/3, 4π/3
-        float brightness =
-            0.5f + 0.5f * (1.0f + sin(phase)) /
-                       2.0f; // Normalizace: sin() -> 0-1 -> 0.5-1.0
-
-        // Silver for tower (source) with pulsation
-        game_led_frame_begin(0, false);
-        game_led_paint_led(rook_from_led, (uint8_t)(192 * brightness), (uint8_t)(192 * brightness), (uint8_t)(192 * brightness));
-
-        // Green for tower destination (destination) with pulsation
-        game_led_paint_led(rook_to_led, 0, (uint8_t)(255 * brightness), 0);
-
-        game_led_frame_end();
-        vTaskDelay(pdMS_TO_TICKS(200));
-      }
-
-      // Final static display
-      game_led_frame_begin(0, false);
-      game_led_paint_led(rook_from_led, 192, 192, 192); // Silver for the tower
-      game_led_paint_led(rook_to_led, 0, 255, 0);       // Green for tower target
-      game_led_frame_end();
-
-      // DO NOT CHANGE PLAYERS for castling!
-      ESP_LOGI(
-          TAG, "⏳ Waiting for rook move from %c%d to %c%d",
-          'a' + castling_state.rook_from_col, castling_state.rook_from_row + 1,
-          'a' + castling_state.rook_to_col, castling_state.rook_to_row + 1);
-      ESP_LOGI(TAG, "🏰 Castling in progress - player remains %s",
-               current_player == PLAYER_WHITE ? "White" : "Black");
-      game_snapshot_persist_after_valid_move();
-      return success; // Return success but don't change player - the player will change
-                      // only after the casting is complete
 #endif
     }
 

@@ -4,6 +4,8 @@
 
 Boot sequence, queues, mutexes, task loops, chess pipelines, and occasional Flutter links — all covered graphically here. The same topics in prose with HW notes are in [`TASK_COMMUNICATION.md`](../firmware/TASK_COMMUNICATION.md). For C API, run `./generate_docs.sh` locally → `doxygen/html/`.
 
+The drawings below still say `matrix_task` and show the reed multiplex. That task is gone. The firmware task is `squares_task` (Hall I2C). `button_task` polls one gesture button. It does not share column pins with a reed matrix. The Mermaid sources were not redrawn.
+
 Queue counts and stack sizes are in [`freertos_chess.h`](../../components/freertos_chess/include/freertos_chess.h); lifecycle order is in [`main/main.c`](../../main/main.c).
 
 New diagram ideas go in `LOCAL_DIAGRAM_BACKLOG.md` (gitignore); the starter template is [DIAGRAM_BACKLOG.local.example.md](DIAGRAM_BACKLOG.local.example.md).
@@ -32,8 +34,8 @@ Short color overview for print / presentation: [`poster_algorithm_flow.svg`](pos
 | Task | P | Stack | Note |
 |------|---|-------|----------|
 | led_task | 7 | 8 KiB | WS2812B |
-| matrix_task | 6 | 4 KiB | reed |
-| button_task | 5 | 3 KiB | multiplex |
+| squares_task | 6 | 4 KiB | Hall I2C. Diagrams below still say matrix_task. |
+| button_task | 5 | 3 KiB | one gesture button |
 | game_task | 4 | 6 KiB | ~100 ms loop |
 | uart_task | 3 | 5 KiB | resume after boot LED |
 | web_server_task | 3 | 20 KiB | WiFi HTTP |
@@ -289,7 +291,7 @@ Each active task from `main.c` has its own loop diagram in `sources/`; implement
 |------|---------------|-------------------|
 | **game_task** | [`task_game_loop.mmd`](sources/task_game_loop.mmd) | `components/game_task/game_task.c` |
 | **led_task** | [`task_led_loop.mmd`](sources/task_led_loop.mmd) | `components/led_task/led_task.c` |
-| **matrix_task** | [`task_matrix_loop.mmd`](sources/task_matrix_loop.mmd) | `components/matrix_task/matrix_task.c` |
+| **squares_task** | [`task_matrix_loop.mmd`](sources/task_matrix_loop.mmd) | `components/squares_task/squares_task.c` (the .mmd still says matrix_task) |
 | **button_task** | [`task_button_loop.mmd`](sources/task_button_loop.mmd) | `components/button_task/button_task.c` |
 | **uart_task** | [`task_uart_loop.mmd`](sources/task_uart_loop.mmd) | `components/uart_task/uart_task.c` |
 | **web_server_task** | [`task_web_loop.mmd`](sources/task_web_loop.mmd) | `components/web_server_task/web_server_task.c` |
@@ -335,11 +337,13 @@ Castling, promotion, en passant, etc. — each has its own flow; the table below
 
 | Topic | Diagram |
 |------|---------|
-| **Castling** — king first, rook moved manually | [`chess_flow_castling.mmd`](sources/chess_flow_castling.mmd) · `castling_state`, `game_validate_castling` |
+| **Castling** — both orders in `game_hall_position.c` (`try_castle_partial`, `commit_rook_as_castle`), commit via `game_board_on_drop_squares()` | [`chess_flow_castling.mmd`](sources/chess_flow_castling.mmd) · the drawing is the old king-then-rook picture. A Hall event returns out of `game_process_drop_command()` before that code. No `GCMD_CASTLE`. |
 | **Promotion** — waiting for Q/R/B/N | [`chess_flow_promotion.mmd`](sources/chess_flow_promotion.mmd) · `promotion_state`, `game_process_promotion_command` |
 | **En passant** — pawn double move + capture | [`chess_flow_en_passant.mmd`](sources/chess_flow_en_passant.mmd) · `game_is_en_passant_possible`, `MOVE_TYPE_EN_PASSANT` |
 | **Capture** — `capture_in_progress` | [`chess_flow_guided_capture.mmd`](sources/chess_flow_guided_capture.mmd) · `game_process_drop_command` |
 | **Boot / NVS** — snapshot vs new game | [`chess_flow_boot_nvs.mmd`](sources/chess_flow_boot_nvs.mmd) · `game_task_start`, `game_load_snapshot_from_nvs` |
+
+The castling SVG was not regenerated. It still draws only king-then-rook through the old `game_physical.c` picture. Diagrams that call `led_set_pixel_safe()` from the game task are the same kind of leftover: board guidance is posted with `game_event_post_*`. `matrix_detect_moves()` and its “3× in a row” debounce are not the Hall scanner.
 
 ![chess_flow_castling.svg](chess_flow_castling.svg)
 ![chess_flow_promotion.svg](chess_flow_promotion.svg)

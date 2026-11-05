@@ -1,6 +1,8 @@
 # How tasks and hardware communicate — CZECHMATE firmware **1.8.0**
 
-> **Hardware note:** This document describes the runtime task communication and GPIO multiplexed scan architecture for the **prototype V1 reed matrix board**. The V1 board senses binary occupancy only (occupied vs empty); chess piece identities are tracked purely in software by game logic from initial positions and validated moves. For complete hardware specifications of the V1 board, see [hardware/v1-reed-matrix/README.md](../../hardware/v1-reed-matrix/README.md). For the next-generation Hall sensor and STM32 architecture (V2), where firmware currently evaluates differential occupancy while automated piece type and color decoding is the hardware design goal, see [hardware/v2-hall-stm32/README.md](../../hardware/v2-hall-stm32/README.md) and [HARDWARE_VERSIONS.md](HARDWARE_VERSIONS.md).
+> **Archived reed path.** The text below describes the old GPIO multiplex (`matrix_task`, 8×8 reed, four promotion buttons, `GAME_CMD_PICKUP` / `GAME_CMD_DROP`, a 5 s in-air timeout). That code is not in the live tree. The task you build is `squares_task`: Hall over I2C, piece type and color in `hall_i2c_squares.c`. Reed sources: [kos/v1-reed](../../kos/v1-reed). Current sensing: [rozpoznani-figur-2026-10-23.md](rozpoznani-figur-2026-10-23.md) and [HARDWARE_VERSIONS.md](../hardware/HARDWARE_VERSIONS.md).
+
+**Live board commands.** `squares_hall_publish_changes()` sends one edge at a time: `GCMD_BOARD_LIFT` when a square goes empty, `GCMD_BOARD_DROP` when it becomes occupied. A Hall place sets `has_from = 0` and carries only the square that filled. There is no 5 s timeout for a piece still in the air. A Hall event with `event_ms != 0` returns from `game_process_drop_command()` into `game_hall_position_on_matrix_event()`.
 
 **Index:** [docs/README.md](../README.md).
 

@@ -186,56 +186,6 @@ void game_show_missing_pieces_led(void) {
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
   /* Setup glow is drawn by the Hall restore guide. */
   return;
-#else
-  uint8_t squares_state[64] = {0};
-  squares_get_state(squares_state);
-
-  bool any_piece = false;
-  for (int i = 0; i < 64; i++) {
-    if (squares_state[i] != 0) {
-      any_piece = true;
-      break;
-    }
-  }
-  if (!any_piece) {
-    game_led_clear_board();
-    return;
-  }
-  
-  // Clean the board
-  game_led_clear_board();
-  
-  // Definition of expected starting position (row-major order)
-  // Rows 0-1 and 6-7 should be occupied, rows 2-5 empty
-  for (int row = 0; row < 2; row++) {
-    for (int col = 0; col < 8; col++) {
-      int idx = row * 8 + col;
-      if (squares_state[idx] == 0) {
-        // A figure is missing on the white baseline
-        game_led_frame_sq(row, col, 255, 0, 0); // Red
-      }
-    }
-  }
-  for (int row = 6; row < 8; row++) {
-    for (int col = 0; col < 8; col++) {
-      int idx = row * 8 + col;
-      if (squares_state[idx] == 0) {
-        // A figure is missing on the black baseline
-        game_led_frame_sq(row, col, 255, 0, 0); // Red
-      }
-    }
-  }
-  for (int row = 2; row < 6; row++) {
-    for (int col = 0; col < 8; col++) {
-      int idx = row * 8 + col;
-      if (squares_state[idx] != 0) {
-        // A random figure in the middle of the board - also in red
-        game_led_frame_sq(row, col, 255, 0, 0); // Red
-      }
-    }
-  }
-  
-  ESP_LOGI(TAG, "🔴 LED: Showing missing pieces in red");
 #endif
 }
 
@@ -590,12 +540,6 @@ void game_start_new_game(void) {
 
   // Start timer for white player if time control is active.
   // Hall waits until the opening guide hands the board over to play.
-#if !CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
-  if (game_is_timer_active()) {
-    ESP_LOGI(TAG, "Starting timer for white player at game start");
-    game_start_timer_move(true); // Start timer for white
-  }
-#endif
 
   // Initialize extended statistics
   (*game_state_white_time_total()) = 0;
@@ -654,8 +598,6 @@ void game_start_new_game(void) {
 #if CONFIG_CHESS_MATRIX_INPUT_I2C_HALL
   /* Opening guide, or yellow the moment the pieces already match the start. */
   game_hall_restore_guide_sync();
-#else
-  game_policy_highlight_movable_if_enabled();
 #endif
   game_task_wdt_reset_safe();
   game_bump_revision_and_notify();
