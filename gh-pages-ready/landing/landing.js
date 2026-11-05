@@ -1,4 +1,8 @@
 (function () {
+  function czmEn() {
+    return document.documentElement.lang === "en";
+  }
+
   /* Always scroll to top on reload (except hash links); no jump while media loads. */
   (function initScrollTopOnLoad() {
     function scrollTopUnlessHash() {
@@ -242,7 +246,8 @@
     if (!v) return;
     var media = v.closest("[data-video-media]");
     // Skip the dark chassis wall on replay so the story restarts on the living board.
-    var LOOP_AT = 7.0;
+    // File starts 1.5s later than the original reel, so this point moved with it.
+    var LOOP_AT = 5.5;
     v.setAttribute("playsinline", "");
     v.muted = true;
 
@@ -730,7 +735,9 @@
           if (ctx) {
             ctx.drawImage(demo, 0, 0, w, h, 0, 0, outW, outH);
             preview.src = canv.toDataURL("image/jpeg", 0.82);
-            preview.alt = "CzechMate — AI coach in the app";
+            preview.alt = czmEn()
+              ? "CzechMate — AI coach in the app"
+              : "CzechMate — AI trenér v aplikaci";
             done = true;
             var previewMedia = preview.closest("[data-video-media]");
             if (previewMedia) czVideoMedia.markReady(previewMedia);
@@ -935,45 +942,6 @@
       v.controls = false;
     });
   })();
-
-  /* Pre-order modal (<dialog>) */
-  var preorderDlg = document.getElementById("preorder-dialog");
-  var preorderAnim = bindAnimatedModal(
-    preorderDlg && typeof preorderDlg.showModal === "function"
-      ? preorderDlg
-      : null
-  );
-  var openPreorder = document.querySelector("[data-open-preorder]");
-  var closePreorder = document.querySelector("[data-close-preorder]");
-  if (preorderDlg && typeof preorderDlg.showModal === "function") {
-    if (openPreorder) {
-      openPreorder.addEventListener("click", function () {
-        preorderAnim.open();
-      });
-    }
-    if (closePreorder) {
-      closePreorder.addEventListener("click", function () {
-        preorderAnim.close();
-      });
-    }
-    preorderDlg.addEventListener("click", function (ev) {
-      if (ev.target === preorderDlg) {
-        preorderAnim.close();
-      }
-    });
-  } else if (openPreorder && preorderDlg) {
-    /* Fallback without native <dialog> */
-    openPreorder.addEventListener("click", function () {
-      preorderDlg.setAttribute("open", "");
-      preorderDlg.style.display = "block";
-    });
-    if (closePreorder) {
-      closePreorder.addEventListener("click", function () {
-        preorderDlg.removeAttribute("open");
-        preorderDlg.style.display = "none";
-      });
-    }
-  }
 
   /* Feature details — modal (cards in the App section) */
   (function initFeatureDetailModal() {
@@ -1250,6 +1218,117 @@
       },
     };
 
+    var CS_FEATURES = {
+      hints: {
+        title: "Nápověda a režimy učení",
+        intro: "Světla na polích a aplikace říkají totéž: pozici nemusíš překládat v hlavě.",
+        blocks: [
+          { heading: "Co deska ukáže na místě", text: "Senzory pod poli sledují obsazení v reálném čase a návrh V2 míří k automatickému rozpoznání typu figurky. LED pomáhají s navrženými tahy, šachem a matem, proměnami a s návratem pozornosti ke správné figurce. V aplikaci máš stejnou pozici s textem a rozborem." },
+          { heading: "Jedna partie, dvě obrazovky", text: "Historie tahů a režimy učení v aplikaci zrcadlí stav desky. Žádné „diagram vedle reality“, který nesedí na figurky." },
+          { heading: "Pro začátečníky i pokročilé", text: "Začátečník vidí na desce jasné signály. Pokročilejší si v aplikaci otevře hlubší rozbor nebo trenéra. Jeden systém roste s úrovní, bez výměny nástrojů." },
+        ],
+      },
+      analysis: {
+        title: "Rozbor a Stockfish",
+        intro: "Engine Stockfish přidá hodnocení a návrhy tahů; sílu si nastavíš podle své úrovně.",
+        blocks: [
+          { heading: "Silný engine, klidné lekce", text: "Stockfish hraje nad lidským stropem. V CzechMate dostaneš hodnocení pozice a návrhy tahů, ale můžeš zvolit slabší linii, aby šlo o učení, ne o sérii jednostranných výsledků." },
+          { heading: "Rozbor po partii a příprava", text: "V aplikaci máš varianty, analytické linie a srovnání s vlastním tahem. Hodí se na přípravu i na rozbor po tréninku." },
+          { heading: "Stejná logika z prohlížeče", text: "S Wi‑Fi a webovým rozhraním desky můžeš část lekce nebo partii proti enginu odehrát z prohlížeče. Hra běží stejně, mění se jen klient." },
+        ],
+      },
+      stockfish_a: {
+        title: "Partie silnější než kterýkoli člověk",
+        intro: "Soupeř silnější než kterýkoli žijící hráč, ale naladitelný tak, aby tě partie pořád něco naučila.",
+        blocks: [
+          { heading: "Síla enginu pod kontrolou", text: "Stockfish na plný výkon porazí každého žijícího hráče. Na učení zvolíš slabší linii a měkčí tempo, abys partii četl, ne jen prohrával." },
+          { heading: "Co dostaneš při učení", text: "U každého tahu vidíš rozdíl mezi svou volbou a návrhem enginu. Na trénink ten kontext často znamená víc než výsledek partie." },
+        ],
+      },
+      stockfish_b: {
+        title: "Orientační hodnocení",
+        intro: "Vypočtené skóre pomůže číst nerovnováhu — nejlíp vedle variant v rozboru.",
+        blocks: [
+          { heading: "Čísla jako vodítko, ne ortel", text: "Hrubé skóre ukáže směr výhody na desce. Nejvíc znamená ve střední hře a v koncovkách, kde drobnosti narostou během několika tahů." },
+          { heading: "Vždy s kontextem tahů", text: "Hodnocení dává smysl vedle variant a analytických linií. Holé číslo bez plánu na víc tahů málokdy stačí." },
+        ],
+      },
+      stockfish_c: {
+        title: "Deska ↔ aplikace",
+        intro: "Firmware drží pravdu o pozici; deska, web i aplikace jen čtou stejný stav.",
+        blocks: [
+          { heading: "Jedna pozice všude", text: "LED, webové rozhraní i telefon ukazují totéž. Systém sleduje pozice figurek na desce v reálném čase, takže lekce na světlech i text na displeji sedí na opravdovou šachovnici." },
+          { heading: "Bluetooth nebo síť", text: "Na blízko často stačí BLE. Doma nebo ve škole můžeš použít i Wi‑Fi a HTTP nebo WebSocket, kde to firmware nabízí. Měníš klienta, ne pravidla hry." },
+        ],
+      },
+      coach: {
+        title: "AI trenér / chat",
+        intro: "Otázky k aktuální pozici: plán, chyby a strategie. Jak hluboko vysvětlení jde, záleží na nastavení.",
+        blocks: [
+          { heading: "Rozhovor u desky", text: "Trenér odpovídá na plány, chyby i obecné otázky. Styl vysvětlení nastavíš od klidu třídy po klubovou hloubku." },
+          { heading: "Asistent pro tvoje prostředí", text: "V nastavení připojíš cloud nebo místní variantu, která sedí pravidlům školy či domova. Offline zůstávají základní nápovědy z vestavěných šachových tipů." },
+          { heading: "Škola a soukromí", text: "Cloudové služby mají vlastní podmínky a zabezpečení. Ve škole dává smysl dopředu rozhodnout o poskytovateli a účtech podle vašich pravidel." },
+        ],
+      },
+      connect: {
+        title: "Připojení k desce",
+        intro: "V jedné místnosti Bluetooth; doma nebo ve třídě často Wi‑Fi a známá IP v síti.",
+        blocks: [
+          { heading: "Bluetooth na dosah", text: "BLE obvykle pokryje jednu místnost bez nastavování IP. Partie a příkazy fungují jako u jiných zařízení poblíž." },
+          { heading: "Wi‑Fi v místní síti", text: "V síťovém režimu aplikace mluví s deskou přes HTTP nebo WebSocket, kde to firmware nabízí. Typické scény: domov, klubovna, třída." },
+          { heading: "Stav vždy z desky", text: "Pravda o pozici žije ve firmwaru. LED i aplikace jen zobrazují totéž; krátký nesoulad může nastat jen během animací na desce." },
+        ],
+      },
+      webui: {
+        title: "Webové rozhraní desky",
+        intro: "Do prohlížeče zadáš IP desky a máš rozhraní bez instalace dalšího programu.",
+        blocks: [
+          { heading: "Rozhraní v prohlížeči", text: "Na desce běží HTTP server. Lekce, nastavení a hru otevřeš z adresy desky v prohlížeči — hodí se ve třídě na zařízeních, kde aplikace není." },
+          { heading: "Stejné lekce s kabelem i bez", text: "Na stabilní síti funguje hra s enginem a lekce z prohlížeče podobně jako v mobilní aplikaci." },
+          { heading: "Web a mobil na stejném API", text: "Telefon, web i vlastní nástroje mohou použít stejné REST API. WebSocket je tam, kde ho firmware vystavuje." },
+        ],
+      },
+      ota: {
+        title: "Flash z aplikace",
+        intro: "Firmware desky nahraješ z aplikace bez programátoru a bez kabelů k čipu.",
+        blocks: [
+          { heading: "Aktualizace bez laboratorního stolu", text: "Nový firmware z aplikace přes Wi‑Fi, nebo v některých postupech po částech přes BLE. Běžná aktualizace nepotřebuje UART ani externí programátor." },
+          { heading: "Průběh sleduješ na LED", text: "OTA můžeš sledovat přímo na šachovnici. Po dokončení deska naběhne do nové verze ve flashi." },
+          { heading: "Několik cest, jak soubor doručit", text: "Podle dostupnosti desky se firmware stáhne přes HTTPS z internetu, přes HTTP z telefonu v síti, nebo po částech přes BLE." },
+        ],
+      },
+      opensource: {
+        title: "Otevřený ekosystém",
+        intro: "Software na GitHubu si můžeš prohlédnout a upravit podle licencí. Hardware zůstává u mě.",
+        blocks: [
+          { heading: "Firmware a aplikace jsou veřejné", text: "Zdrojáky firmwaru i klienta jsou v repozitáři. Přesná práva k použití určuje licence projektu." },
+          { heading: "Školy a kluby", text: "Můžeš přidat vlastní texty lekcí, překlady nebo fork na pokusy, aniž bys čekal na centrální plán (když na to máš kapacitu)." },
+          { heading: "Jak přispět zpátky", text: "Větší změny jdou přes revizi. Issue nebo pull request pomůže i dalším učitelům a vývojářům v komunitě." },
+        ],
+      },
+    };
+
+    function localizedFeature(key) {
+      var en = FEATURE_PAGES[key];
+      if (!en) return null;
+      var cs = CS_FEATURES[key];
+      if (czmEn() || !cs) return en;
+      return {
+        title: cs.title || en.title,
+        intro: cs.intro || en.intro,
+        blocks: en.blocks.map(function (b, i) {
+          var c = (cs.blocks && cs.blocks[i]) || {};
+          return {
+            icon: b.icon,
+            logo: b.logo,
+            img: b.img,
+            heading: c.heading || b.heading,
+            text: c.text || b.text,
+          };
+        }),
+      };
+    }
+
     function renderFeatureBlocks(blocks) {
       return blocks
         .map(function (b) {
@@ -1308,8 +1387,13 @@
       });
     }
 
+    var featureKeyOpen = null;
+    var featureTriggerOpen = null;
+
     function openFeatureDetail(key, trigger) {
-      var data = FEATURE_PAGES[key];
+      featureKeyOpen = key;
+      featureTriggerOpen = trigger || null;
+      var data = localizedFeature(key);
       if (!data || !featureDlg || !featureTitle || !featureBody) return;
       featureTitle.textContent = data.title;
       featureBody.innerHTML =
@@ -1371,6 +1455,11 @@
           }
         });
       });
+      document.addEventListener("czm-lang", function () {
+        if (!featureKeyOpen || !featureDlg) return;
+        var open = featureDlg.open || featureDlg.hasAttribute("open");
+        if (open) openFeatureDetail(featureKeyOpen, featureTriggerOpen);
+      });
     }
   })();
 
@@ -1396,11 +1485,41 @@
       });
     }
 
+    function pieceCopy() {
+      var en = czmEn();
+      return {
+        showWhite: en ? "Show white pieces" : "Ukázat bílé figurky",
+        showBlack: en ? "Show black pieces" : "Ukázat černé figurky",
+        white: en ? " — white PLA set" : " — bílá sada PLA",
+        black: en ? " — black PLA set" : " — černá sada PLA",
+        names: en
+          ? {
+              king: "King",
+              queen: "Queen",
+              bishop: "Bishop",
+              knight: "Knight",
+              rook: "Rook",
+              pawn: "Pawn",
+              piece: "Piece",
+            }
+          : {
+              king: "Král",
+              queen: "Dáma",
+              bishop: "Střelec",
+              knight: "Jezdec",
+              rook: "Věž",
+              pawn: "Pěšec",
+              piece: "Figurka",
+            },
+      };
+    }
+
     function updateAlts(isBlack) {
+      var copy = pieceCopy();
       gallery.querySelectorAll("img.piece-tone__white").forEach(function (img) {
-        var base = (img.getAttribute("alt") || "").replace(/\s*—\s*(white|black) PLA set$/i, "");
-        if (!base) base = "Piece";
-        img.alt = base + (isBlack ? " — black PLA set" : " — white PLA set");
+        var key = img.getAttribute("data-piece") || "piece";
+        var name = copy.names[key] || copy.names.piece;
+        img.alt = name + (isBlack ? copy.black : copy.white);
       });
     }
 
@@ -1410,7 +1529,8 @@
       gallery.style.setProperty("--piece-tone", next.toFixed(4));
       gallery.classList.toggle("is-black", isBlack);
       btn.setAttribute("aria-pressed", isBlack ? "true" : "false");
-      btn.setAttribute("aria-label", isBlack ? "Show white pieces" : "Show black pieces");
+      var copy = pieceCopy();
+      btn.setAttribute("aria-label", isBlack ? copy.showWhite : copy.showBlack);
       updateAlts(isBlack);
     }
 
@@ -1424,7 +1544,8 @@
 
       gallery.classList.toggle("is-black", isBlack);
       btn.setAttribute("aria-pressed", isBlack ? "true" : "false");
-      btn.setAttribute("aria-label", isBlack ? "Show white pieces" : "Show black pieces");
+      var copy = pieceCopy();
+      btn.setAttribute("aria-label", isBlack ? copy.showWhite : copy.showBlack);
       updateAlts(isBlack);
 
       function frame(now) {
@@ -1461,6 +1582,13 @@
     }
 
     setToneInstant(0);
+
+    document.addEventListener("czm-lang", function () {
+      var isBlack = tone >= 0.5;
+      var copy = pieceCopy();
+      btn.setAttribute("aria-label", isBlack ? copy.showWhite : copy.showBlack);
+      updateAlts(isBlack);
+    });
 
     btn.addEventListener("click", function () {
       hydrateBlackPieces();

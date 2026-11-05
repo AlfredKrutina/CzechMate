@@ -364,6 +364,50 @@ a:hover {
   align-items: center;
 }
 
+.header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.header-actions .nav-cta {
+  margin-left: 0;
+}
+
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(143, 188, 159, 0.35);
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.lang-switch button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.38rem 0.48rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.lang-switch button[aria-pressed="true"] {
+  background: rgba(143, 188, 159, 0.28);
+  color: var(--text);
+}
+
+.nav-mobile .lang-switch {
+  margin: 0.35rem 0 0.15rem;
+}
+
 @media (max-width: 879px) {
   .nav-cta {
     margin-left: auto;
@@ -1934,7 +1978,7 @@ dialog.cz-modal[open].cz-modal--visible::backdrop {
   word-break: break-word;
 }
 
-/* Interest — interest survey + pre-order (links to Google Forms) */
+/* Interest — interest survey (link to Google Form) */
 
 .interest {
   background: linear-gradient(180deg, var(--bg-deep) 0%, rgba(17, 25, 23, 0.96) 45%, var(--bg-deep) 100%);
@@ -1947,12 +1991,7 @@ dialog.cz-modal[open].cz-modal--visible::backdrop {
   margin-top: 2rem;
   grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
-}
-
-@media (min-width: 880px) {
-  .interest__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  max-width: 40rem;
 }
 
 .interest__card {
@@ -2055,8 +2094,7 @@ dialog.cz-modal[open].cz-modal--visible::backdrop {
   color: var(--primary-bright);
 }
 
-.interest__card > .interest-poll__submit,
-.interest__card > .interest-preorder-btn {
+.interest__card > .interest-poll__submit {
   margin-top: auto;
   align-self: stretch;
   text-align: center;
@@ -2064,102 +2102,6 @@ dialog.cz-modal[open].cz-modal--visible::backdrop {
 
 .interest-poll__submit {
   box-sizing: border-box;
-}
-
-.interest-preorder-btn {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.preorder-modal {
-  box-sizing: border-box;
-  max-width: min(26rem, calc(100vw - max(2rem, env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px) + 0.5rem)));
-  width: min(26rem, 100%);
-  padding: 0;
-  border: 1px solid rgba(143, 188, 159, 0.28);
-  border-radius: var(--radius-xl);
-  background: var(--bg-card);
-  color: var(--text);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
-}
-
-.preorder-modal::backdrop {
-  background: rgba(5, 10, 8, 0.65);
-  backdrop-filter: blur(20px) saturate(1.15);
-  -webkit-backdrop-filter: blur(20px) saturate(1.15);
-}
-
-.preorder-modal__inner {
-  position: relative;
-  padding: 1.5rem 1.35rem 1.35rem;
-}
-
-.preorder-modal__close {
-  position: absolute;
-  top: 0.65rem;
-  right: 0.65rem;
-  width: 2.25rem;
-  height: 2.25rem;
-  border: none;
-  border-radius: 8px;
-  background: rgba(46, 74, 62, 0.45);
-  color: var(--text);
-  font-size: 1.35rem;
-  line-height: 1;
-  cursor: pointer;
-  transition: background 0.2s var(--ease-soft);
-}
-
-.preorder-modal__close:hover {
-  background: rgba(143, 188, 159, 0.22);
-}
-
-.preorder-modal__title {
-  margin: 0 2rem 0.65rem 0;
-  font-size: 1.2rem;
-  letter-spacing: -0.02em;
-}
-
-.preorder-modal__lead {
-  margin: 0 0 0.85rem;
-  font-size: 0.94rem;
-  line-height: 1.55;
-  color: var(--text);
-}
-
-.preorder-modal__list {
-  margin: 0 0 1.15rem;
-  padding-left: 1.2rem;
-  font-size: 0.88rem;
-  line-height: 1.52;
-  color: var(--text-muted);
-}
-
-.preorder-modal__list li {
-  margin: 0.45rem 0;
-}
-
-.preorder-modal__list li::marker {
-  color: var(--primary-bright);
-}
-
-.preorder-modal__text {
-  margin: 0 0 1rem;
-  font-size: 0.92rem;
-  color: var(--text-muted);
-  line-height: 1.55;
-}
-
-.preorder-modal__cta {
-  display: inline-flex;
-  justify-content: center;
-  width: 100%;
-  box-sizing: border-box;
-  text-decoration: none;
-}
-
-.preorder-modal__cta--secondary {
-  margin-top: 0.5rem;
 }
 
 /* Download strip */

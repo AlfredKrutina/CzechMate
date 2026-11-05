@@ -92,12 +92,11 @@ ffmpeg -y -i input.mp4 -an -vf "scale=min(1280\,iw):-2" -c:v libx264 -preset med
 
 The page uses **links only** (no custom POST from JavaScript).
 
-1. **Pre-order:** `https://docs.google.com/forms/d/18ns5uSUSzr5zcHsiZwD1HWfY15xBa-folmE-oH86BsY/viewform` (respondents: `/viewform`; in the Forms editor the same form is under `/edit`).
-2. **Interest survey:** `https://docs.google.com/forms/d/e/1FAIpQLSck_q6sjN1nnUs9aV2CsY0MyPNo9puLcncW603iEJz6BMLjPw/viewform`
+**Interest survey:** `https://docs.google.com/forms/d/1RWwvhisYNLNxVX5Xp6IBaNhQ0BBdXuGOSQ1fDilBfiY/viewform`
 
-Responses stay in the Google account that owns the forms; deploying a new static page version does not change them.
+Responses stay in the Google account that owns the form; deploying a new static page version does not change them.
 
-**Placement in HTML:** in the Interest section, the survey link is in the left panel; the pre-order button opens a modal with a link to the pre-order form.
+**Placement in HTML:** the survey link is the only call to action in the Interest section.
 
 ## Links after deploy
 
