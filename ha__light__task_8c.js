@@ -58,6 +58,7 @@ var ha__light__task_8c =
     [ "ha_light_publish_state", "ha__light__task_8c.html#acfd4bff3aadd5d97a22f29ac1d676242", null ],
     [ "ha_light_reinit_mqtt", "ha__light__task_8c.html#aaa92358f60e1043bee0865be41fb1b2c", null ],
     [ "ha_light_report_activity", "ha__light__task_8c.html#af2c48fb0be8e0af2ec8f26872bea2721", null ],
+    [ "ha_light_request_lamp_off", "ha__light__task_8c.html#a657ce19b8df62be3a253ebd9a2f13602", null ],
     [ "ha_light_request_mode", "ha__light__task_8c.html#a8fdf3eface4d0eb325301970402433cc", null ],
     [ "ha_light_request_web_lamp", "ha__light__task_8c.html#a202ec2f125d3ba5225e410fd37f40e33", null ],
     [ "ha_light_set_activity_timeout_sec", "ha__light__task_8c.html#a93c1bbd6a8b8933ab773fbb97b35bb1e", null ],
