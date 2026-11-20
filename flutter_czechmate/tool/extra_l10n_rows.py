@@ -1539,7 +1539,36 @@ EXTRA_ROWS.extend([
         "Supply sag: {count} brownouts in a row ({total} total). LEDs are at {scale}% of the set brightness. Unplug the board and plug it back in to try full brightness.",
         "Propady napájení: {count}× za sebou (celkem {total}). LEDky jedou na {scale} % nastaveného jasu. Odpoj desku a znovu ji zapoj, ať se zkusí plný jas.",
     ),
+    (
+        "devEspStatsHeading",
+        "Processor and Wi-Fi stats",
+        "Statistiky procesoru a Wi-Fi",
+    ),
+    (
+        "devWifiRssiLine",
+        "Wi-Fi RSSI: {rssi} dBm",
+        "Síla Wi-Fi signálu: {rssi} dBm",
+    ),
+    (
+        "devCpuFreqLine",
+        "CPU frequency: {mhz} MHz",
+        "Frekvence CPU: {mhz} MHz",
+    ),
+    (
+        "devHeapLine",
+        "Free heap: {freeKb} KB (min {minKb} KB)",
+        "Volná paměť: {freeKb} KB (min {minKb} KB)",
+    ),
+    (
+        "devTasksUptimeLine",
+        "Tasks: {tasks} • Uptime: {uptime} s",
+        "Tasky: {tasks} • Běh: {uptime} s",
+    ),
 ])
+EXTRA_PLACEHOLDER_META["devWifiRssiLine"] = {"placeholders": {"rssi": {"type": "int"}}}
+EXTRA_PLACEHOLDER_META["devCpuFreqLine"] = {"placeholders": {"mhz": {"type": "int"}}}
+EXTRA_PLACEHOLDER_META["devHeapLine"] = {"placeholders": {"freeKb": {"type": "int"}, "minKb": {"type": "int"}}}
+EXTRA_PLACEHOLDER_META["devTasksUptimeLine"] = {"placeholders": {"tasks": {"type": "int"}, "uptime": {"type": "int"}}}
 EXTRA_PLACEHOLDER_META["analysisChartJumpedToMove"] = {"placeholders": {"n": {"type": "int"}}}
 EXTRA_PLACEHOLDER_META["settingsAppUpdateBannerSubtitle"] = {
     "placeholders": {"current": {"type": "String"}, "latest": {"type": "String"}}

@@ -125,6 +125,7 @@
 #include "esp_mac.h"
 #include "esp_random.h"
 #include "esp_wifi.h"
+#include "esp_private/esp_clk.h"
 #include "freertos_chess.h"
 #include "../ble_task/include/ble_task.h"
 #include "../config_manager/include/config_manager.h"
@@ -1727,6 +1728,21 @@ esp_err_t wifi_get_sta_status_json(char *buffer, size_t buffer_size) {
     blk_csv[sizeof(blk_csv) - 1] = '\0';
   }
 
+  int sta_rssi = 0;
+  if (sta_connected) {
+    wifi_ap_record_t ap_info;
+    if (esp_wifi_sta_get_ap_info(&ap_info) == ESP_OK) {
+      sta_rssi = (int)ap_info.rssi;
+    }
+  }
+  const unsigned long free_heap = (unsigned long)esp_get_free_heap_size();
+  const unsigned long min_free_heap =
+      (unsigned long)esp_get_minimum_free_heap_size();
+  const unsigned long long uptime_sec =
+      (unsigned long long)(esp_timer_get_time() / 1000000ULL);
+  const unsigned long cpu_mhz = (unsigned long)(esp_clk_cpu_freq() / 1000000);
+  const unsigned tasks_count = (unsigned)uxTaskGetNumberOfTasks();
+
   int len = snprintf(
       buffer, buffer_size,
       "{"
@@ -1737,19 +1753,26 @@ esp_err_t wifi_get_sta_status_json(char *buffer, size_t buffer_size) {
       "\"sta_ssid\":\"%s\","
       "\"sta_ip\":\"%s\","
       "\"sta_connected\":%s,"
+      "\"sta_rssi\":%d,"
       "\"online\":%s,"
       "\"sta_blk_oct\":\"%s\","
       "\"mdns_host\":\"%s\","
-      "\"locked\":%s"
+      "\"locked\":%s,"
+      "\"free_heap\":%lu,"
+      "\"min_free_heap\":%lu,"
+      "\"uptime_sec\":%llu,"
+      "\"cpu_mhz\":%lu,"
+      "\"tasks_count\":%u"
       "}",
       wifi_ap_ssid_effective, ap_ip_out, ap_clients_out,
       ap_on ? "true" : "false",
       sta_ssid_display,
       (sta_connected && sta_ip[0] != '\0') ? sta_ip : "Not connected",
-      sta_connected ? "true" : "false", online ? "true" : "false",
+      sta_connected ? "true" : "false", sta_rssi, online ? "true" : "false",
       blk_csv,
       mdns_host,
-      web_locked ? "true" : "false");
+      web_locked ? "true" : "false",
+      free_heap, min_free_heap, uptime_sec, cpu_mhz, tasks_count);
 
   if (len < 0 || len >= (int)buffer_size) {
     ESP_LOGE(TAG, "Failed to create WiFi status JSON (buffer too small)");

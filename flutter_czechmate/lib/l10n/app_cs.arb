@@ -2341,6 +2341,45 @@
       }
     }
   },
+  "devEspStatsHeading": "Statistiky procesoru a Wi-Fi",
+  "devWifiRssiLine": "Síla Wi-Fi signálu: {rssi} dBm",
+  "@devWifiRssiLine": {
+    "placeholders": {
+      "rssi": {
+        "type": "int"
+      }
+    }
+  },
+  "devCpuFreqLine": "Frekvence CPU: {mhz} MHz",
+  "@devCpuFreqLine": {
+    "placeholders": {
+      "mhz": {
+        "type": "int"
+      }
+    }
+  },
+  "devHeapLine": "Volná paměť: {freeKb} KB (min {minKb} KB)",
+  "@devHeapLine": {
+    "placeholders": {
+      "freeKb": {
+        "type": "int"
+      },
+      "minKb": {
+        "type": "int"
+      }
+    }
+  },
+  "devTasksUptimeLine": "Tasky: {tasks} • Běh: {uptime} s",
+  "@devTasksUptimeLine": {
+    "placeholders": {
+      "tasks": {
+        "type": "int"
+      },
+      "uptime": {
+        "type": "int"
+      }
+    }
+  },
   "navLearn": "Učení",
   "gameTopNoBoard": "Bez desky",
   "gameTopConnecting": "Připojuji…",

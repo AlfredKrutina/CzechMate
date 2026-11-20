@@ -297,7 +297,9 @@ void ha_light_report_activity(const char *activity_type) {
   static uint32_t last_report_time = 0;
   uint32_t current_time = esp_timer_get_time() / 1000;
   const bool force_queue =
-      (activity_type != NULL && strcmp(activity_type, "web_game_mode") == 0);
+      (activity_type != NULL &&
+       (strcmp(activity_type, "web_game_mode") == 0 ||
+        strcmp(activity_type, "lift") == 0));
   if (!force_queue && current_time - last_report_time < 500) {
     return;
   }
@@ -359,13 +361,12 @@ static void ha_light_switch_to_ha_mode(void) {
 
   remember_lit_color(r, g, b, brightness);
 
-  /* Light off releases the board: a lift then continues the game, or the
-   * starting-position piece colors come back. */
+  /* Lamp off keeps lamp_hold active so game/setup LEDs stay dark until a
+   * piece is lifted or the lamp is turned back on. */
   if (state) {
     led_set_ha_color(r, g, b, brightness);
   } else {
     led_set_ha_color(0, 0, 0, 0);
-    led_set_lamp_hold(false);
   }
   ha_light_wdt_feed_if_own_task();
 
@@ -1462,6 +1463,17 @@ bool ha_light_request_mode(ha_mode_t mode) {
   return xQueueSend(ha_light_cmd_queue, &cmd, 0) == pdTRUE;
 }
 
+bool ha_light_request_lamp_off(void) {
+  if (ha_light_cmd_queue == NULL) {
+    return false;
+  }
+  ha_light_command_t cmd = {0};
+  cmd.type = HA_CMD_SET_MODE;
+  cmd.u.web_lamp.state = (uint8_t)HA_MODE_HA;
+  cmd.u.web_lamp.set_brightness = 1; /* keep HA_MODE_HA with lamp state OFF */
+  return xQueueSend(ha_light_cmd_queue, &cmd, 0) == pdTRUE;
+}
+
 void ha_light_persist_mode(void) { lamp_nvs_save_mode(); }
 
 uint32_t ha_light_get_activity_timeout_sec(void) {
@@ -1764,24 +1776,46 @@ void ha_light_task_start(void *pvParameters) {
         ha_game_apply(cmd.u.web_lamp.state, cmd.u.web_lamp.r);
       } else if (cmd.type == HA_CMD_SET_MODE) {
         if (cmd.u.web_lamp.state == HA_MODE_HA) {
-          /* Coming from the game, the lamp comes back in the last real color. */
-          if (current_mode == HA_MODE_GAME && ha_light_state_mutex != NULL &&
-              xSemaphoreTake(ha_light_state_mutex, pdMS_TO_TICKS(50)) ==
-                  pdTRUE) {
-            if (!ha_light_state.state ||
-                (ha_light_state.r | ha_light_state.g | ha_light_state.b) == 0) {
-              ha_light_state.r = s_lit_r;
-              ha_light_state.g = s_lit_g;
-              ha_light_state.b = s_lit_b;
-              ha_light_state.brightness = s_lit_br;
-              ha_light_state.state = true;
+          if (cmd.u.web_lamp.set_brightness) {
+            /* Turn lamp off (black) while staying in HA_MODE_HA. */
+            if (ha_light_state_mutex != NULL &&
+                xSemaphoreTake(ha_light_state_mutex, pdMS_TO_TICKS(50)) ==
+                    pdTRUE) {
+              remember_lit_color(ha_light_state.r, ha_light_state.g,
+                                 ha_light_state.b, ha_light_state.brightness);
+              ha_light_state.state = false;
               xSemaphoreGive(ha_light_state_mutex);
               lamp_nvs_save();
-            } else {
-              xSemaphoreGive(ha_light_state_mutex);
             }
+            ha_light_switch_to_ha_mode();
+          } else {
+            /* Coming from the game or off-lamp, the lamp comes back in the last
+             * real color. */
+            bool was_off = false;
+            if (ha_light_state_mutex != NULL &&
+                xSemaphoreTake(ha_light_state_mutex, pdMS_TO_TICKS(50)) ==
+                    pdTRUE) {
+              was_off = !ha_light_state.state;
+              if (current_mode == HA_MODE_GAME || was_off) {
+                if (!ha_light_state.state ||
+                    (ha_light_state.r | ha_light_state.g | ha_light_state.b) ==
+                        0) {
+                  ha_light_state.r = s_lit_r;
+                  ha_light_state.g = s_lit_g;
+                  ha_light_state.b = s_lit_b;
+                  ha_light_state.brightness = s_lit_br;
+                  ha_light_state.state = true;
+                  xSemaphoreGive(ha_light_state_mutex);
+                  lamp_nvs_save();
+                } else {
+                  xSemaphoreGive(ha_light_state_mutex);
+                }
+              } else {
+                xSemaphoreGive(ha_light_state_mutex);
+              }
+            }
+            ha_light_switch_to_ha_mode();
           }
-          ha_light_switch_to_ha_mode();
         } else {
           ha_light_switch_to_game_mode();
         }
@@ -1791,11 +1825,19 @@ void ha_light_task_start(void *pvParameters) {
         last_activity_time_ms = esp_timer_get_time() / 1000;
 
         /* A bump that only renames a piece, or a piece put back on the same
-         * square, is not a move. Only a real relocation leaves the lamp. */
+         * square, is not a move. Only a real relocation leaves a lit lamp.
+         * When the lamp is turned off, lifting any piece returns to game mode. */
+        bool lamp_on = true;
+        if (ha_light_state_mutex != NULL &&
+            xSemaphoreTake(ha_light_state_mutex, pdMS_TO_TICKS(50)) == pdTRUE) {
+          lamp_on = ha_light_state.state;
+          xSemaphoreGive(ha_light_state_mutex);
+        }
         bool leave_lamp = false;
         if (activity_name != NULL &&
             (strcmp(activity_name, "move") == 0 ||
-             strcmp(activity_name, "web_game_mode") == 0)) {
+             strcmp(activity_name, "web_game_mode") == 0 ||
+             (strcmp(activity_name, "lift") == 0 && !lamp_on))) {
           leave_lamp = true;
         }
         if (current_mode == HA_MODE_HA && leave_lamp) {

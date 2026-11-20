@@ -310,6 +310,23 @@ class _DeveloperSettingsViewState extends ConsumerState<DeveloperSettingsView> {
                 'STA: ${_wifiStatus!.staSsid} (${_wifiStatus!.staIp}) - ${_wifiStatus!.staConnected ? "ONLINE" : "Offline"}'),
             Text(
                 'AP: ${_wifiStatus!.apSsid} (${_wifiStatus!.apIp}) - Clients: ${_wifiStatus!.apClients}'),
+            const SizedBox(height: 8),
+            Text(context.l10n.devEspStatsHeading,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+            if (_wifiStatus!.staConnected && _wifiStatus!.staRssi != null)
+              Text(context.l10n.devWifiRssiLine(_wifiStatus!.staRssi!)),
+            if (_wifiStatus!.cpuMhz != null)
+              Text(context.l10n.devCpuFreqLine(_wifiStatus!.cpuMhz!)),
+            if (_wifiStatus!.freeHeap != null && _wifiStatus!.minFreeHeap != null)
+              Text(context.l10n.devHeapLine(
+                _wifiStatus!.freeHeap! ~/ 1024,
+                _wifiStatus!.minFreeHeap! ~/ 1024,
+              )),
+            if (_wifiStatus!.tasksCount != null && _wifiStatus!.uptimeSec != null)
+              Text(context.l10n.devTasksUptimeLine(
+                _wifiStatus!.tasksCount!,
+                _wifiStatus!.uptimeSec!,
+              )),
           ] else ...[
             const Text(
                 'Wi-Fi status unavailable. Fetch it with the button below.'),

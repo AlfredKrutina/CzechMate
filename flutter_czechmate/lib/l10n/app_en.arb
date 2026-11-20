@@ -2341,6 +2341,45 @@
       }
     }
   },
+  "devEspStatsHeading": "Processor and Wi-Fi stats",
+  "devWifiRssiLine": "Wi-Fi RSSI: {rssi} dBm",
+  "@devWifiRssiLine": {
+    "placeholders": {
+      "rssi": {
+        "type": "int"
+      }
+    }
+  },
+  "devCpuFreqLine": "CPU frequency: {mhz} MHz",
+  "@devCpuFreqLine": {
+    "placeholders": {
+      "mhz": {
+        "type": "int"
+      }
+    }
+  },
+  "devHeapLine": "Free heap: {freeKb} KB (min {minKb} KB)",
+  "@devHeapLine": {
+    "placeholders": {
+      "freeKb": {
+        "type": "int"
+      },
+      "minKb": {
+        "type": "int"
+      }
+    }
+  },
+  "devTasksUptimeLine": "Tasks: {tasks} • Uptime: {uptime} s",
+  "@devTasksUptimeLine": {
+    "placeholders": {
+      "tasks": {
+        "type": "int"
+      },
+      "uptime": {
+        "type": "int"
+      }
+    }
+  },
   "navLearn": "Learn",
   "gameTopNoBoard": "No board",
   "gameTopConnecting": "Connecting…",

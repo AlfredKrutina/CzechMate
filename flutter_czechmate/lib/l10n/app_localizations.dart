@@ -8031,6 +8031,36 @@ abstract class AppLocalizations {
   /// **'Supply sag: {count} brownouts in a row ({total} total). LEDs are at {scale}% of the set brightness. Unplug the board and plug it back in to try full brightness.'**
   String powerLimitBanner(String count, String total, String scale);
 
+  /// No description provided for @devEspStatsHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Processor and Wi-Fi stats'**
+  String get devEspStatsHeading;
+
+  /// No description provided for @devWifiRssiLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Wi-Fi RSSI: {rssi} dBm'**
+  String devWifiRssiLine(int rssi);
+
+  /// No description provided for @devCpuFreqLine.
+  ///
+  /// In en, this message translates to:
+  /// **'CPU frequency: {mhz} MHz'**
+  String devCpuFreqLine(int mhz);
+
+  /// No description provided for @devHeapLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Free heap: {freeKb} KB (min {minKb} KB)'**
+  String devHeapLine(int freeKb, int minKb);
+
+  /// No description provided for @devTasksUptimeLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks: {tasks} • Uptime: {uptime} s'**
+  String devTasksUptimeLine(int tasks, int uptime);
+
   /// No description provided for @navLearn.
   ///
   /// In en, this message translates to:

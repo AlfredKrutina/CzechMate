@@ -185,6 +185,12 @@ ha_mode_t ha_light_get_mode(void);
  */
 bool ha_light_request_mode(ha_mode_t mode);
 
+/**
+ * Turn the lamp off (black) while staying in HA_MODE_HA so the board remains
+ * dark until a piece is lifted or the lamp is turned back on.
+ */
+bool ha_light_request_lamp_off(void);
+
 /** Write the current game/lamp mode into lamp_cfg. Safe to call before sleep. */
 void ha_light_persist_mode(void);
 

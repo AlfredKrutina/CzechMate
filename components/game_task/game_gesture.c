@@ -306,6 +306,7 @@ static volatile bool s_lamp_wave_req;
 static volatile bool s_off_wave_req;
 static uint32_t s_off_cover;
 static ha_mode_t s_pending_mode;
+static bool s_pending_lamp_off;
 
 /* One-shot handoff: sweep cycle ended, game start waits 2 s on the game task. */
 #define NEW_GAME_DWELL_US (2000LL * 1000LL)
@@ -573,6 +574,7 @@ static bool gesture_begin_mode_wave(ha_mode_t next) {
     return false;
   }
   s_pending_mode = next;
+  s_pending_lamp_off = false;
   s_opening_wave = false;
   s_wave_wait = true;
   ESP_LOGI(TAG, "[STAGING] wave preview %s -> %s (commit after cover)",
@@ -696,9 +698,19 @@ static void handle_event(gesture_event_t ev) {
       ble_task_finish_pairing_window();
       break;
     }
-    ha_mode_t next =
-        (ha_light_get_mode() == HA_MODE_HA) ? HA_MODE_GAME : HA_MODE_HA;
-    if (!gesture_begin_mode_wave(next)) {
+    if (ha_light_get_mode() == HA_MODE_HA) {
+      uint8_t r = 0, g = 0, b = 0, bright = 255;
+      bool on = true;
+      ha_light_get_state(&r, &g, &b, &bright, &on);
+      if (on) {
+        game_gesture_request_lamp_off_wave();
+      } else if (!gesture_begin_mode_wave(HA_MODE_HA)) {
+        ESP_LOGW(TAG, "wave did not start");
+        return;
+      }
+      break;
+    }
+    if (!gesture_begin_mode_wave(HA_MODE_HA)) {
       ESP_LOGW(TAG, "wave did not start");
       return;
     }
@@ -766,6 +778,15 @@ static void handle_result(led_gesture_result_t result) {
     if (s_opening_wave) {
       s_opening_wave = false;
       (void)game_opening_ensure_and_start();
+      break;
+    }
+    if (s_pending_lamp_off) {
+      s_pending_lamp_off = false;
+      if (!ha_light_request_lamp_off()) {
+        ESP_LOGW(TAG, "lamp off commit queue full");
+      } else {
+        ESP_LOGI(TAG, "[STAGING] lamp off committed (waiting for lift)");
+      }
       break;
     }
     if (!ha_light_request_mode(s_pending_mode)) {
@@ -849,12 +870,13 @@ void game_gesture_poll(void) {
     if (s_off_cover != 0 &&
         led_gesture_start_wave(colors, true, s_off_cover)) {
       s_pending_mode = HA_MODE_HA;
+      s_pending_lamp_off = true;
       s_opening_wave = false;
       s_wave_wait = true;
       ESP_LOGI(TAG, "[STAGING] lamp off wave");
     } else {
       ESP_LOGW(TAG, "lamp off wave did not start");
-      (void)ha_light_request_mode(HA_MODE_HA);
+      (void)ha_light_request_lamp_off();
     }
   }
   if (s_lamp_wave_req && !s_wave_wait && !led_gesture_anim_busy()) {

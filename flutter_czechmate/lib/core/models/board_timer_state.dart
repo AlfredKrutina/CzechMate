@@ -84,6 +84,12 @@ class EspWifiStatus {
     required this.locked,
     this.staBlkOct = '',
     this.mdnsHost = '',
+    this.staRssi,
+    this.freeHeap,
+    this.minFreeHeap,
+    this.uptimeSec,
+    this.cpuMhz,
+    this.tasksCount,
   });
 
   final String apSsid;
@@ -101,6 +107,12 @@ class EspWifiStatus {
 
   /// `czechmate-aabbcc` when firmware adds `mdns_host`. Empty on older images.
   final String mdnsHost;
+  final int? staRssi;
+  final int? freeHeap;
+  final int? minFreeHeap;
+  final int? uptimeSec;
+  final int? cpuMhz;
+  final int? tasksCount;
 
   factory EspWifiStatus.fromJson(Map<String, dynamic> json) {
     final apIp = json['ap_ip'] as String? ?? '';
@@ -123,6 +135,12 @@ class EspWifiStatus {
       locked: json['locked'] as bool? ?? false,
       staBlkOct: json['sta_blk_oct'] as String? ?? '',
       mdnsHost: json['mdns_host'] as String? ?? '',
+      staRssi: (json['sta_rssi'] as num?)?.toInt(),
+      freeHeap: (json['free_heap'] as num?)?.toInt(),
+      minFreeHeap: (json['min_free_heap'] as num?)?.toInt(),
+      uptimeSec: (json['uptime_sec'] as num?)?.toInt(),
+      cpuMhz: (json['cpu_mhz'] as num?)?.toInt(),
+      tasksCount: (json['tasks_count'] as num?)?.toInt(),
     );
   }
 }

@@ -222,7 +222,7 @@ void game_process_commands(void) {
       commands_processed++;
       ESP_LOGI(TAG, "Received command kind: %d (processed: %lu/%lu)",
                (int)cmd.kind, commands_processed, MAX_COMMANDS_PER_CYCLE);
-      ha_light_report_activity("command");
+      ha_light_report_activity(cmd.kind == GCMD_BOARD_LIFT ? "lift" : "command");
 
       switch (cmd.kind) {
       case GCMD_NEW_GAME:

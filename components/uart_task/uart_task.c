@@ -139,6 +139,7 @@
 #include "esp_chip_info.h"
 #include "esp_log.h"
 #include "esp_private/esp_clk.h"
+#include "esp_wifi.h"
 #include "esp_system.h"
 #include "esp_task_wdt.h"
 #include "esp_timer.h"
@@ -1510,6 +1511,17 @@ command_result_t uart_cmd_status(const char *args) {
       "═══════════════════════════════════════════════════════════════");
   uart_send_formatted("Version: %s", CHESS_VERSION_STRING);
   uart_send_formatted("Build Date: %s", CHESS_BUILD_DATE);
+  uart_send_formatted("CPU Freq: %d MHz", esp_clk_cpu_freq() / 1000000);
+  uart_send_formatted("Reset Reason: %d", (int)esp_reset_reason());
+  {
+    wifi_ap_record_t ap_info;
+    if (esp_wifi_sta_get_ap_info(&ap_info) == ESP_OK) {
+      uart_send_formatted("WiFi STA RSSI: %d dBm (ch %u)", (int)ap_info.rssi,
+                          (unsigned)ap_info.primary);
+    } else {
+      uart_send_formatted("WiFi STA RSSI: disconnected");
+    }
+  }
   uart_send_formatted("Free Heap: %zu bytes", esp_get_free_heap_size());
   uart_send_formatted("Minimum Free: %zu bytes",
                       esp_get_minimum_free_heap_size());

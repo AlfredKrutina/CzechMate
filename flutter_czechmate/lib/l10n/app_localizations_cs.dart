@@ -4555,6 +4555,29 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
+  String get devEspStatsHeading => 'Statistiky procesoru a Wi-Fi';
+
+  @override
+  String devWifiRssiLine(int rssi) {
+    return 'Síla Wi-Fi signálu: $rssi dBm';
+  }
+
+  @override
+  String devCpuFreqLine(int mhz) {
+    return 'Frekvence CPU: $mhz MHz';
+  }
+
+  @override
+  String devHeapLine(int freeKb, int minKb) {
+    return 'Volná paměť: $freeKb KB (min $minKb KB)';
+  }
+
+  @override
+  String devTasksUptimeLine(int tasks, int uptime) {
+    return 'Tasky: $tasks • Běh: $uptime s';
+  }
+
+  @override
   String get navLearn => 'Učení';
 
   @override

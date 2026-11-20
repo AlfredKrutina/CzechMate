@@ -4555,6 +4555,29 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get devEspStatsHeading => 'Processor and Wi-Fi stats';
+
+  @override
+  String devWifiRssiLine(int rssi) {
+    return 'Wi-Fi RSSI: $rssi dBm';
+  }
+
+  @override
+  String devCpuFreqLine(int mhz) {
+    return 'CPU frequency: $mhz MHz';
+  }
+
+  @override
+  String devHeapLine(int freeKb, int minKb) {
+    return 'Free heap: $freeKb KB (min $minKb KB)';
+  }
+
+  @override
+  String devTasksUptimeLine(int tasks, int uptime) {
+    return 'Tasks: $tasks • Uptime: $uptime s';
+  }
+
+  @override
   String get navLearn => 'Learn';
 
   @override

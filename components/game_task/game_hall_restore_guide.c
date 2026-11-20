@@ -183,9 +183,11 @@ static bool s_target_aligned;
 static bool s_target_painted;
 static bool s_opening_clock_started;
 static uint32_t s_opening_deadline_ms;
+static uint32_t s_opening_idle_deadline_ms;
 static uint8_t s_pending_digest[64];
 static uint32_t s_pending_since_ms;
 static bool s_pending_valid;
+#define OPENING_IDLE_TIMEOUT_MS 120000U
 #define GUIDE_STABLE_MS 150U
 
 static bool occupancy_same(const uint8_t a[64], const uint8_t b[64]) {
@@ -824,6 +826,7 @@ bool game_hall_restore_guide_in_play(void) { return s_opening_done; }
 void game_hall_restore_guide_force_resync(void) {
   s_opening_done = false;
   s_opening_clock_started = false;
+  s_opening_idle_deadline_ms = 0;
   s_digest_valid = false;
   s_sync_requested = true;
   s_target_aligned = false;
@@ -1043,8 +1046,18 @@ void game_hall_restore_guide_sync(void) {
     }
   }
   if (s_digest_valid && sensors_unchanged(digest)) {
+    uint32_t now_ms = (uint32_t)(esp_timer_get_time() / 1000);
+    if (s_guide_led_active && s_opening_idle_deadline_ms != 0 &&
+        (int32_t)(now_ms - s_opening_idle_deadline_ms) >= 0) {
+      s_opening_idle_deadline_ms = 0;
+      game_event_post_restore(NULL, GAME_EVT_RESTORE_OP_FADE_OUT);
+      s_guide_led_active = false;
+      ESP_LOGI(TAG, "[STAGING] opening setup guide faded after 2m inactivity");
+    }
     goto out;
   }
+  s_opening_idle_deadline_ms =
+      (uint32_t)(esp_timer_get_time() / 1000) + OPENING_IDLE_TIMEOUT_MS;
 
   /* Last piece off the board: light every engine home and hold 10 s.
    * This used to fade immediately, and only the new-game gesture on an
